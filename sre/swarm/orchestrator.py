@@ -1,13 +1,14 @@
 """
 OmniAST SRE Swarm & Multi-Agent Orchestrator
 Manages concurrent AI models (Claude, Codex, Antigravity, DeepSeek, Grok) acting
-as autonomous software engineers for multiple users, repositories, and servers.
+as autonomous software engineers with multi-account pools and failovers.
 """
 
 import time
 import uuid
 from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, field
+from sre.models.multi_account_broker import MultiAccountBroker, ModelAccount
 
 @dataclass
 class SwarmAgent:
@@ -16,7 +17,9 @@ class SwarmAgent:
     model: str  # e.g., 'anthropic/claude-3-7-sonnet', 'openai/codex-1', 'deepmind/antigravity', 'deepseek-v3'
     role: str   # 'code_repairer', 'architecture_reviewer', 'security_sentinel', 'test_generator'
     status: str # 'idle', 'analyzing', 'repairing', 'verifying', 'recovering'
+    provider: str = "codex" # 'antigravity', 'codex', 'claude', 'deepseek', 'grok'
     current_task: Optional[str] = None
+    assigned_account_id: Optional[str] = None
     processed_count: int = 0
     repaired_count: int = 0
     last_active_ts: float = field(default_factory=time.time)
@@ -37,27 +40,30 @@ class CodebaseIncident:
 
 class SREOrchestrator:
     """
-    Central SRE kernel coordinating agents, auto-triage, and self-healing.
+    Central SRE kernel coordinating multi-account model pools, auto-triage, and self-healing.
     """
     def __init__(self):
         self.agents: Dict[str, SwarmAgent] = {}
         self.incidents: Dict[str, CodebaseIncident] = {}
         self.users: Dict[str, Dict[str, Any]] = {}
         self.activity_log: List[Dict[str, Any]] = []
+        self.account_broker = MultiAccountBroker()
 
         # Initialize default multi-model developer squad
         self._init_default_squad()
 
     def _init_default_squad(self):
         squad = [
-            ("agent-anti", "Antigravity Prime", "deepmind/antigravity", "architecture_reviewer"),
-            ("agent-codex", "Codex Engine", "openai/codex-1", "code_repairer"),
-            ("agent-claude", "Claude Inspector", "anthropic/claude-3-7-sonnet", "security_sentinel"),
-            ("agent-deepseek", "DeepSeek MathCore", "deepseek-ai/deepseek-coder", "test_generator"),
-            ("agent-grok", "Grok Pulse", "xai/grok-code", "concurrency_auditor")
+            ("agent-anti", "Antigravity Prime", "deepmind/antigravity", "architecture_reviewer", "antigravity"),
+            ("agent-codex", "Codex Engine", "openai/codex", "code_repairer", "codex"),
+            ("agent-claude", "Claude Inspector", "anthropic/claude", "security_sentinel", "claude"),
+            ("agent-deepseek", "DeepSeek MathCore", "deepseek-ai/deepseek-coder", "test_generator", "deepseek"),
+            ("agent-grok", "Grok Pulse", "xai/grok-code", "concurrency_auditor", "grok")
         ]
-        for aid, name, model, role in squad:
-            self.agents[aid] = SwarmAgent(id=aid, name=name, model=model, role=role, status="idle")
+        for aid, name, model, role, prov in squad:
+            self.agents[aid] = SwarmAgent(
+                id=aid, name=name, model=model, role=role, provider=prov, status="idle"
+            )
 
     def register_user(self, user_id: str, username: str, language: str = "es", repos: List[str] = None):
         self.users[user_id] = {
@@ -97,7 +103,7 @@ class SREOrchestrator:
         self.incidents[inc_id] = incident
         self.log_event("incident_detected", f"New {severity.upper()} incident {inc_id} in {repo}:{file_path}", {"incident_id": inc_id})
         
-        # Autonomous Dispatch: match with idle agent
+        # Autonomous Dispatch: match with idle agent and acquire active account
         self.dispatch_incident(inc_id)
         return inc_id
 
@@ -109,17 +115,25 @@ class SREOrchestrator:
         # Find best available agent
         available = [a for a in self.agents.values() if a.status == "idle"]
         if not available:
-            # If all busy, pick least recently active
             available = sorted(self.agents.values(), key=lambda a: a.last_active_ts)
 
         agent = available[0]
+        # Acquire active account from broker with failover
+        acc = self.account_broker.acquire_account(agent.provider)
+        acc_label = f"{acc.account_name} ({acc.id})" if acc else "Fallback Local"
+        agent.assigned_account_id = acc.id if acc else None
+
         agent.status = "analyzing"
-        agent.current_task = f"Repairing {incident.id} ({incident.file_path})"
+        agent.current_task = f"Repairing {incident.id} ({incident.file_path}) via {acc_label}"
         agent.last_active_ts = time.time()
         incident.assigned_agent_id = agent.id
         incident.status = "investigating"
 
-        self.log_event("agent_dispatched", f"Agent {agent.name} assigned to {incident.id}", {"agent": agent.name, "incident": incident.id})
+        self.log_event(
+            "agent_dispatched",
+            f"Agent {agent.name} assigned to {incident.id} using {acc_label}",
+            {"agent": agent.name, "incident": incident.id, "account": acc_label}
+        )
 
     def apply_repair(self, inc_id: str, patch_code: str):
         incident = self.incidents.get(inc_id)
@@ -130,8 +144,17 @@ class SREOrchestrator:
 
         agent = self.agents.get(incident.assigned_agent_id)
         if agent:
+            if agent.assigned_account_id:
+                # Report successful invocation to broker
+                self.account_broker.report_result(
+                    agent.assigned_account_id,
+                    success=True,
+                    latency_ms=310.0,
+                    tokens=420
+                )
             agent.status = "idle"
             agent.current_task = None
+            agent.assigned_account_id = None
             agent.repaired_count += 1
             agent.processed_count += 1
 
@@ -141,6 +164,7 @@ class SREOrchestrator:
         return {
             "kernel_status": "ONLINE",
             "uptime_seconds": time.time(),
+            "model_pools": self.account_broker.get_pool_status(),
             "active_agents": [
                 {
                     "id": a.id,
@@ -148,6 +172,7 @@ class SREOrchestrator:
                     "model": a.model,
                     "role": a.role,
                     "status": a.status,
+                    "provider": a.provider,
                     "current_task": a.current_task,
                     "repaired_count": a.repaired_count
                 } for a in self.agents.values()

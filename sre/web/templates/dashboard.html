@@ -231,6 +231,17 @@
     </div>
   </div>
 
+  <!-- Multi-Account Model Pools & Circuit Breaker (SAORI Architecture) -->
+  <div class="card" style="margin-bottom: 24px;">
+    <div class="card-title">
+      <span>AI Model Pools & Failover Accounts (Antigravity · Codex · Claude · DeepSeek)</span>
+      <span style="font-size: 12px; color: var(--cyan); font-family: 'JetBrains Mono';">Circuit Breaker & Automatic Failover</span>
+    </div>
+    <div class="agent-grid" id="poolGrid">
+      <!-- Injected by JavaScript -->
+    </div>
+  </div>
+
   <div class="grid-layout">
     <!-- Active Incidents / Autonomous Fixes -->
     <div class="card">
@@ -290,6 +301,33 @@
             </div>
           </div>
         `).join('');
+
+        // 1b. Render Multi-Account Pools
+        if (data.model_pools && data.model_pools.pools) {
+          const poolGrid = document.getElementById('poolGrid');
+          let poolHtml = '';
+          for (const [prov, accounts] of Object.entries(data.model_pools.pools)) {
+            accounts.forEach(acc => {
+              const isOnline = acc.status === 'ONLINE';
+              const badgeClass = isOnline ? 'agent-status-idle' : 'agent-status-working';
+              const borderCol = isOnline ? 'rgba(56, 189, 248, 0.4)' : 'rgba(251, 191, 36, 0.6)';
+              poolHtml += `
+                <div class="agent-pill" style="border-left: 3px solid ${borderCol};">
+                  <div class="agent-header">
+                    <span class="agent-name">${acc.name}</span>
+                    <span class="${badgeClass}">● ${acc.status}</span>
+                  </div>
+                  <div class="agent-model" style="color: var(--cyan);">${prov.toUpperCase()} · Priority ${acc.priority} (${acc.auth_profile})</div>
+                  <div class="agent-task">Latency: ${acc.latency_ms}ms · Tokens: ${acc.tokens_consumed}</div>
+                  <div style="margin-top: 8px; font-size: 11px; color: #94A3B8; font-family: 'JetBrains Mono';">
+                    Failures: <strong>${acc.failures}</strong> | ${acc.available ? 'Ready for Tasks' : 'Sleeping: ' + acc.sleeping_seconds_left + 's'}
+                  </div>
+                </div>
+              `;
+            });
+          }
+          poolGrid.innerHTML = poolHtml;
+        }
 
         // 2. Render Incidents
         const tbody = document.getElementById('incidentTable');

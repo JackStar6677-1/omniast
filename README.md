@@ -253,15 +253,19 @@ OmniAST features an autonomous **Site Reliability Engineering (SRE) Swarm** desi
 
 * **Autonomous Code Repair:** Detects syntax failures, concurrency leaks, and null pointers; formulates minimal patch deltas.
 * **Proactive Code Suggestions:** Suggests architectural and performance improvements based on AST node dependencies.
-* **Multi-User & Multi-Language Support:** Operates seamlessly across teams and adapts prompts to user language preferences.
-* **Real-Time Web Console:** Provides a responsive dashboard showing live agent status, incident triage, and streaming kernel telemetry:
+* **Multi-Account Model Pools (SAORI Pattern):** Transparently pools multiple accounts per provider (e.g. `codex-1` Terra primary with failover to `codex-2` Luna backup; `antigravity-1` prime with failover to `antigravity-2`; `claude-1` Opus with `claude-2` Haiku).
+* **Automated Circuit Breaker:** Detects rate limits (429), quota exhaustion, or timeouts. After 3 consecutive failures, automatically trips the circuit to `SLEEPING` and fails over to secondary backup without aborting the task.
+* **Terminal CLI & Web Dashboard:** Inspect live pool health via `omniast accounts` or via the interactive web console:
 
 ```bash
+# Inspect all configured model pools and failover status
+omniast accounts
+
 # Launch the SRE Live Web Console (default port 8089)
 python -m sre.web.server 8089
 ```
 
-Open your browser at `http://localhost:8089/dashboard` to inspect real-time agent allocations, active codebase patches, and WebSocket telemetry.
+Open your browser at `http://localhost:8089/dashboard` to inspect real-time agent allocations, active model failover pools, and WebSocket telemetry.
 
 ---
 

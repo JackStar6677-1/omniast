@@ -1,5 +1,5 @@
 """
-Unit and Integration Tests for OmniAST Kernel, Transpilers, WASM, Grammars, and Hermes Skills
+Unit and Integration Tests for OmniAST Kernel, Transpilers, WASM, Grammars, Hermes Skills, and Multi-Account Broker
 """
 
 import unittest
@@ -16,6 +16,7 @@ from transpilers.rust_transpiler import RustTranspiler
 from transpilers.typescript_transpiler import TypeScriptTranspiler
 from transpilers.wasm_transpiler import WasmTranspiler
 from core.skills.hermes_openclaw import HermesSkillRegistry
+from sre.models.multi_account_broker import MultiAccountBroker, ModelAccount
 
 class TestOmniASTKernel(unittest.TestCase):
     def setUp(self):
@@ -150,6 +151,38 @@ class TestOmniASTKernel(unittest.TestCase):
         self.assertTrue(os.path.exists(highlights_scm), "highlights.scm exists")
         self.assertTrue(os.path.exists(vscode_pkg), "vscode package.json exists")
         self.assertTrue(os.path.exists(runtime_cargo), "runtime Cargo.toml exists")
+
+    def test_multi_account_pools_and_failover(self):
+        broker = MultiAccountBroker()
+        
+        # 1. Primary account acquisition
+        acc1 = broker.acquire_account("codex")
+        self.assertIsNotNone(acc1)
+        self.assertEqual(acc1.id, "codex-1")
+
+        # 2. Simulate 3 consecutive failures to trip circuit breaker on codex-1
+        broker.report_result("codex-1", success=False, error="Rate limit 429 quota exhausted")
+        broker.report_result("codex-1", success=False, error="Rate limit 429 quota exhausted")
+        trip_res = broker.report_result("codex-1", success=False, error="Rate limit 429 quota exhausted")
+        
+        self.assertEqual(trip_res["status"], "circuit_tripped")
+        self.assertEqual(acc1.status, "SLEEPING")
+
+        # 3. Transparent failover to secondary backup (codex-2)
+        acc2 = broker.acquire_account("codex")
+        self.assertIsNotNone(acc2)
+        self.assertEqual(acc2.id, "codex-2")
+        self.assertEqual(acc2.status, "ONLINE")
+
+        # 4. Same verified for antigravity pool
+        anti1 = broker.acquire_account("antigravity")
+        self.assertEqual(anti1.id, "antigravity-1")
+        broker.report_result("antigravity-1", success=False)
+        broker.report_result("antigravity-1", success=False)
+        broker.report_result("antigravity-1", success=False)
+        self.assertEqual(anti1.status, "SLEEPING")
+        anti2 = broker.acquire_account("antigravity")
+        self.assertEqual(anti2.id, "antigravity-2")
 
 if __name__ == "__main__":
     unittest.main()
