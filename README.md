@@ -171,6 +171,24 @@ Equip your AI agent with [`prompts/universal_agent_prompt.md`](prompts/universal
 
 ---
 
+## 🌐 SRE Multi-Agent Swarm & Live Web Console
+
+OmniAST features an autonomous **Site Reliability Engineering (SRE) Swarm** designed for multi-tenant, multi-repository continuous repair. Rather than relying on static scripts, pooled AI models (Antigravity, Codex, Claude, DeepSeek, Grok) act concurrently as automated software engineers:
+
+* **Autonomous Code Repair:** Detects syntax failures, concurrency leaks, and null pointers; formulates minimal patch deltas.
+* **Proactive Code Suggestions:** Suggests architectural and performance improvements based on AST node dependencies.
+* **Multi-User & Multi-Language Support:** Operates seamlessly across teams and adapts prompts to user language preferences.
+* **Real-Time Web Console:** Provides a responsive dashboard showing live agent status, incident triage, and streaming kernel telemetry:
+
+```bash
+# Launch the SRE Live Web Console (default port 8089)
+python -m sre.web.server 8089
+```
+
+Open your browser at `http://localhost:8089/dashboard` to inspect real-time agent allocations, active codebase patches, and WebSocket telemetry.
+
+---
+
 ## 🧭 Project Roadmap
 
 - [x] **Phase 1: Concept & Initial Architecture** (Kernel data structures, AST definitions, animated banner).

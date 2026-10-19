@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OmniAST SRE Kernel — Multi-Agent Live Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@500;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #030712;
+      --card-bg: rgba(15, 23, 42, 0.75);
+      --border: rgba(56, 189, 248, 0.2);
+      --border-glow: rgba(56, 189, 248, 0.4);
+      --text: #F8FAFC;
+      --text-muted: #94A3B8;
+      --cyan: #38BDF8;
+      --violet: #818CF8;
+      --green: #34D399;
+      --amber: #FBBF24;
+      --rose: #F43F5E;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(circle at 15% 20%, rgba(129, 140, 248, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 85% 30%, rgba(56, 189, 248, 0.1) 0%, transparent 45%),
+        radial-gradient(circle at 50% 80%, rgba(52, 211, 153, 0.08) 0%, transparent 50%);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, sans-serif;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .brand h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 26px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #E0E7FF 0%, #38BDF8 50%, #A78BFA 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: rgba(52, 211, 153, 0.12);
+      border: 1px solid rgba(52, 211, 153, 0.4);
+      color: var(--green);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 10px var(--green);
+      animation: blink 2s infinite ease-in-out;
+    }
+    @keyframes blink { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+    .grid-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 1024px) {
+      .grid-layout { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    }
+    .card-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--cyan);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    /* Agent Swarm List */
+    .agent-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .agent-pill {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 14px;
+      transition: all 0.2s ease;
+    }
+    .agent-pill:hover {
+      border-color: var(--cyan);
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.25);
+    }
+    .agent-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .agent-name {
+      font-weight: 700;
+      font-size: 15px;
+      color: #E2E8F0;
+    }
+    .agent-model {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--violet);
+    }
+    .agent-task {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .agent-status-idle { color: var(--green); font-size: 12px; font-weight: 600; }
+    .agent-status-working { color: var(--amber); font-size: 12px; font-weight: 600; }
+
+    /* Incidents Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th {
+      text-align: left;
+      padding: 10px 12px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    td {
+      padding: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .severity-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .sev-critical { background: rgba(244, 63, 94, 0.2); color: var(--rose); }
+    .sev-high { background: rgba(251, 191, 36, 0.2); color: var(--amber); }
+    .sev-suggestion { background: rgba(56, 189, 248, 0.2); color: var(--cyan); }
+
+    /* Live Stream Log */
+    .log-stream {
+      background: #020617;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      height: 280px;
+      overflow-y: auto;
+      line-height: 1.6;
+    }
+    .log-time { color: #64748B; }
+    .log-msg { color: #CBD5E1; }
+    .log-hi { color: var(--cyan); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2">
+        <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+        <polyline points="2 17 12 22 22 17"/>
+        <polyline points="2 12 12 17 22 12"/>
+      </svg>
+      <div>
+        <h1>OmniAST SRE Swarm Console</h1>
+        <p style="font-size: 13px; color: #94A3B8;">Autonomous Multi-Agent Developer Kernel · Live AST Orchestrator</p>
+      </div>
+    </div>
+    <div class="status-badge">
+      <span class="pulse-dot"></span>
+      KERNEL ONLINE (5 AGENTS POOLED)
+    </div>
+  </header>
+
+  <!-- Live Swarm Overview -->
+  <div class="card" style="margin-bottom: 24px;">
+    <div class="card-title">
+      <span>Autonomous Developer Fleet (Active Models)</span>
+      <span style="font-size: 12px; color: var(--text-muted); font-family: 'JetBrains Mono';">Auto-Triage & Zero-Token-Exhaustion Mode</span>
+    </div>
+    <div class="agent-grid" id="agentGrid">
+      <!-- Injected by JavaScript -->
+    </div>
+  </div>
+
+  <div class="grid-layout">
+    <!-- Active Incidents / Autonomous Fixes -->
+    <div class="card">
+      <div class="card-title">
+        <span>Active Codebase Incidents & Auto-Patches</span>
+        <button id="btnSimulate" style="background: rgba(56,189,248,0.15); border: 1px solid var(--cyan); color: var(--cyan); padding: 4px 10px; border-radius: 6px; font-family: 'JetBrains Mono'; font-size: 11px; cursor: pointer;">+ Inject Incident</button>
+      </div>
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Target Repo / File</th>
+              <th>Severity</th>
+              <th>Assigned AI</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="incidentTable">
+            <!-- Injected by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Live Execution Telemetry -->
+    <div class="card">
+      <div class="card-title">
+        <span>Kernel Live Telemetry & Event Stream</span>
+        <span style="font-size: 12px; color: var(--green); font-family: 'JetBrains Mono';">WebSocket Raw</span>
+      </div>
+      <div class="log-stream" id="logStream">
+        <!-- Injected by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function refreshDashboard() {
+      try {
+        const res = await fetch('/api/state');
+        if (!res.ok) return;
+        const data = await res.json();
+
+        // 1. Render Agents
+        const grid = document.getElementById('agentGrid');
+        grid.innerHTML = data.active_agents.map(a => `
+          <div class="agent-pill">
+            <div class="agent-header">
+              <span class="agent-name">${a.name}</span>
+              <span class="${a.status === 'idle' ? 'agent-status-idle' : 'agent-status-working'}">● ${a.status.toUpperCase()}</span>
+            </div>
+            <div class="agent-model">${a.model}</div>
+            <div class="agent-task">${a.current_task || 'Awaiting incoming AST events...'}</div>
+            <div style="margin-top: 8px; font-size: 11px; color: #64748B; font-family: 'JetBrains Mono';">
+              Repairs Verified: <strong style="color: #38BDF8;">${a.repaired_count}</strong>
+            </div>
+          </div>
+        `).join('');
+
+        // 2. Render Incidents
+        const tbody = document.getElementById('incidentTable');
+        tbody.innerHTML = data.incidents.map(i => {
+          let sevClass = 'sev-suggestion';
+          if (i.severity === 'critical') sevClass = 'sev-critical';
+          if (i.severity === 'high') sevClass = 'sev-high';
+
+          return `
+            <tr>
+              <td style="color: var(--cyan); font-weight: 700;">${i.id}</td>
+              <td>${i.repo}<br><span style="color: #64748B; font-size: 11px;">${i.file}</span></td>
+              <td><span class="severity-badge ${sevClass}">${i.severity}</span></td>
+              <td style="color: var(--violet);">${i.agent}</td>
+              <td><span style="color: ${i.status === 'patch_ready' ? 'var(--green)' : 'var(--amber)'}; font-weight: 700;">${i.status.toUpperCase()}</span></td>
+            </tr>
+          `;
+        }).join('');
+
+        // 3. Render Logs
+        const logBox = document.getElementById('logStream');
+        logBox.innerHTML = data.recent_activity.map(entry => {
+          const d = new Date(entry.timestamp * 1000);
+          const timeStr = d.toTimeString().split(' ')[0];
+          return `<div><span class="log-time">[${timeStr}]</span> <span class="log-hi">[${entry.type.toUpperCase()}]</span> <span class="log-msg">${entry.message}</span></div>`;
+        }).join('');
+        logBox.scrollTop = logBox.scrollHeight;
+
+      } catch (err) {
+        console.error('Failed to update dashboard state', err);
+      }
+    }
+
+    document.getElementById('btnSimulate').addEventListener('click', async () => {
+      await fetch('/api/incidents/simulate', { method: 'POST' });
+      refreshDashboard();
+    });
+
+    setInterval(refreshDashboard, 2500);
+    refreshDashboard();
+  </script>
+</body>
+</html>
