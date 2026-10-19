@@ -87,7 +87,9 @@ class OmniASTKernel:
         Parses high-level OmniAST syntax into normalized AST representation.
         Supports modules, listeners, machines, sentinels, properties, guards, and events.
         """
-        raw_lines = code.splitlines()
+        # Pre-process: insert newlines around '{' and '}' so one-liners parse cleanly
+        normalized_code = code.replace("{", " {\n").replace("}", "\n}\n")
+        raw_lines = normalized_code.splitlines()
         clean_lines = []
         for line in raw_lines:
             s = line.strip()
