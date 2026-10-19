@@ -11,8 +11,9 @@
 <p align="center">
   <a href="#key-innovations"><img src="https://img.shields.io/badge/Architecture-Graph--Native-38BDF8?style=flat-square" alt="Graph Native"></a>
   <a href="#token-efficiency"><img src="https://img.shields.io/badge/LLM_Efficiency-85%25_Token_Reduction-818CF8?style=flat-square" alt="Token Saver"></a>
-  <a href="#supported-targets"><img src="https://img.shields.io/badge/Targets-Java_21+_·_Rust_·_Python_·_WASM-F472B6?style=flat-square" alt="Multi Target"></a>
+  <a href="#supported-targets"><img src="https://img.shields.io/badge/Targets-Java_21+_·_Rust_·_Python_·_TS_·_WASM-F472B6?style=flat-square" alt="Multi Target"></a>
   <a href="#tree-sitter-grammar"><img src="https://img.shields.io/badge/Tree--Sitter-Grammar_Ready-34D399?style=flat-square" alt="Tree Sitter"></a>
+  <a href="#hermes--openclaw-skills-ecosystem"><img src="https://img.shields.io/badge/Ecosystem-Hermes_·_OpenClaw-A855F7?style=flat-square" alt="Hermes OpenClaw"></a>
   <a href="#license"><img src="https://img.shields.io/badge/License-MIT-FBBF24?style=flat-square" alt="MIT License"></a>
 </p>
 
@@ -208,10 +209,17 @@ omniast transpile --input examples/odysseia_safety.omni --target jvm --output ./
 # 4. Transpile to Asynchronous Python SRE Daemon
 omniast transpile --input examples/sre_sentinel.omni --target py --output ./dist/sentinel.py
 
-# 5. Compile to Standalone WebAssembly Binary
+# 5. Transpile to TypeScript / Node.js (OpenClaw & Hermes Compatible)
+omniast transpile --input examples/odysseia_safety.omni --target ts --output ./dist/safety.ts
+
+# 6. Compile to Standalone WebAssembly Binary
 omniast transpile --input examples/industrial_machine.omni --target wasm --output ./dist/machine.wasm
 
-# 6. Run the Kernel Test Suite
+# 7. Export Hermes Function Calling Schemas or OpenClaw Skills
+omniast skills --format hermes
+omniast skills --format openclaw
+
+# 8. Run the Kernel Test Suite
 python -m unittest discover -s tests
 ```
 
@@ -254,6 +262,16 @@ python -m sre.web.server 8089
 ```
 
 Open your browser at `http://localhost:8089/dashboard` to inspect real-time agent allocations, active codebase patches, and WebSocket telemetry.
+
+---
+
+## 🦅 Hermes & OpenClaw Skills Ecosystem
+
+OmniAST bridges the graph kernel directly into **Nous Hermes** (JSON Schema Function Calling) and **OpenClaw** (TypeScript multi-channel gateway) agent architectures:
+
+* **Hermes Function Calling:** Native support for tool calls (`omniast_query_graph`, `omniast_mutate_node`, `openclaw_dispatch_message`, `openclaw_exec_sandboxed`, `shared_memory_recall`).
+* **OpenClaw Multi-Gateway:** Exportable plugin manifests allowing OpenClaw daemons to dispatch actions across Discord, WhatsApp, In-Game RCON, and Web Consoles.
+* **Architectural Blueprint:** Read the complete master study on unifying SAORI, OpenClaw, Hermes, and OmniAST in [`docs/architecture/SAORI_OPENCLAW_HERMES_UNIFICATION.md`](docs/architecture/SAORI_OPENCLAW_HERMES_UNIFICATION.md).
 
 ---
 

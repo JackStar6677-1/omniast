@@ -1,5 +1,5 @@
 """
-Unit and Integration Tests for OmniAST Kernel, Transpilers, WASM, and Grammars
+Unit and Integration Tests for OmniAST Kernel, Transpilers, WASM, Grammars, and Hermes Skills
 """
 
 import unittest
@@ -13,7 +13,9 @@ from core.kernel.engine import OmniASTKernel
 from transpilers.java_transpiler import JavaTranspiler
 from transpilers.python_transpiler import PythonTranspiler
 from transpilers.rust_transpiler import RustTranspiler
+from transpilers.typescript_transpiler import TypeScriptTranspiler
 from transpilers.wasm_transpiler import WasmTranspiler
+from core.skills.hermes_openclaw import HermesSkillRegistry
 
 class TestOmniASTKernel(unittest.TestCase):
     def setUp(self):
@@ -21,12 +23,13 @@ class TestOmniASTKernel(unittest.TestCase):
         self.kernel.register_transpiler("jvm", JavaTranspiler())
         self.kernel.register_transpiler("py", PythonTranspiler())
         self.kernel.register_transpiler("rust", RustTranspiler())
+        self.kernel.register_transpiler("ts", TypeScriptTranspiler())
 
     def test_parse_simple_module(self):
         code = """
         module TestMod {
             version: "1.0.0"
-            target: [jvm, py, rust]
+            target: [jvm, py, rust, ts]
 
             machine Battery {
                 capacity: 50000J
@@ -81,6 +84,20 @@ class TestOmniASTKernel(unittest.TestCase):
         self.assertIn("run_machine_fusioncore", rust_code)
         self.assertIn("omniast_industrialgrid_create", rust_code)
 
+    def test_transpile_typescript(self):
+        code = """
+        module BotSecurity {
+            listener FloodGuard on chat.message {
+                guard event.isSpam
+            }
+        }
+        """
+        mod = self.kernel.parse_source(code)
+        ts_code = self.kernel.transpile(mod, "ts")
+        self.assertIn("export class BotSecurityModule extends EventEmitter", ts_code)
+        self.assertIn("export class FloodGuardListener", ts_code)
+        self.assertIn("dispatchHermesTool", ts_code)
+
     def test_transpile_wasm_wat(self):
         code = """
         module EdgeReactor {
@@ -109,6 +126,18 @@ class TestOmniASTKernel(unittest.TestCase):
         wasm_bytes = wasm_trans.transpile_to_wasm_binary(mod.to_dict())
         self.assertTrue(wasm_bytes.startswith(b"\x00asm\x01\x00\x00\x00"))
         self.assertGreaterEqual(len(wasm_bytes), 32)
+
+    def test_hermes_and_openclaw_skills(self):
+        registry = HermesSkillRegistry()
+        tools = registry.export_hermes_tools_json()
+        self.assertGreaterEqual(len(tools), 5)
+        tool_names = [t["function"]["name"] for t in tools]
+        self.assertIn("omniast_query_graph", tool_names)
+        self.assertIn("openclaw_dispatch_message", tool_names)
+        self.assertIn("openclaw_exec_sandboxed", tool_names)
+
+        manifest = registry.export_openclaw_skills_manifest()
+        self.assertEqual(manifest["engine"], "openclaw-hermes-hybrid")
 
     def test_tree_sitter_and_editor_artifacts(self):
         root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

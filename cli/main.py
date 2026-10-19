@@ -1,7 +1,8 @@
 """
 OmniAST / GraphLang Command Line Interface (CLI)
 Allows parsing, transpiling, and inspecting OmniAST modules directly from the terminal.
-Supports JVM (Java 21+), Native Rust/Tokio, Python Asyncio, and WebAssembly (WASM/WAT).
+Supports JVM (Java 21+), Native Rust/Tokio, Python Asyncio, TypeScript/Node.js, and WebAssembly (WASM/WAT).
+Integrates Hermes Function Calling schemas and OpenClaw Skills.
 """
 
 import sys
@@ -13,13 +14,16 @@ from core.kernel.engine import OmniASTKernel
 from transpilers.java_transpiler import JavaTranspiler
 from transpilers.python_transpiler import PythonTranspiler
 from transpilers.rust_transpiler import RustTranspiler
+from transpilers.typescript_transpiler import TypeScriptTranspiler
 from transpilers.wasm_transpiler import WasmTranspiler
+from core.skills.hermes_openclaw import HermesSkillRegistry
 
 def build_kernel() -> OmniASTKernel:
     k = OmniASTKernel()
     k.register_transpiler("jvm", JavaTranspiler())
     k.register_transpiler("py", PythonTranspiler())
     k.register_transpiler("rust", RustTranspiler())
+    k.register_transpiler("ts", TypeScriptTranspiler())
     k.register_transpiler("wat", WasmTranspiler())
     return k
 
@@ -40,11 +44,15 @@ def main():
     trans_cmd.add_argument("--input", "-i", required=True, help="Path to .omni source file")
     trans_cmd.add_argument(
         "--target", "-t",
-        choices=["jvm", "py", "rust", "wasm", "wat"],
+        choices=["jvm", "py", "rust", "ts", "wasm", "wat"],
         required=True,
-        help="Target platform (jvm, py, rust, wasm, wat)"
+        help="Target platform (jvm, py, rust, ts, wasm, wat)"
     )
     trans_cmd.add_argument("--output", "-o", help="Optional output file path")
+
+    # Command: skills
+    skill_cmd = subparsers.add_parser("skills", help="Export Hermes & OpenClaw skill schemas for AI agent tool calling")
+    skill_cmd.add_argument("--format", "-f", choices=["hermes", "openclaw"], default="hermes", help="Output format")
 
     # Command: prompt
     subparsers.add_parser("prompt", help="Display the Universal Token-Saver prompt for AI models")
@@ -103,6 +111,15 @@ def main():
                 print(f"[OK] Transpiled {args.target.upper()} code saved to {args.output}")
             else:
                 print(result)
+
+    elif args.command == "skills":
+        reg = HermesSkillRegistry()
+        if args.format == "openclaw":
+            manifest = reg.export_openclaw_skills_manifest()
+            print(json.dumps(manifest, indent=2))
+        else:
+            tools = reg.export_hermes_tools_json()
+            print(json.dumps(tools, indent=2))
 
     elif args.command == "prompt":
         prompt_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "prompts", "universal_agent_prompt.md")
