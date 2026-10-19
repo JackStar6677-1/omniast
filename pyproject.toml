@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "omniast"
+version = "0.1.0"
+description = "The Universal Graph-Native Kernel & Declarative AST for Autonomous AI Systems & Engine Interop"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "JackStar6677-1" }
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Compilers",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence"
+]
+dependencies = [
+    "tree-sitter>=0.21.0"
+]
+
+[project.scripts]
+omniast = "core.kernel.engine:main"

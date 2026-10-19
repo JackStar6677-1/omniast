@@ -1,0 +1,13 @@
+module OdysseiaSafety {
+    version: "2.1.0"
+    target: [jvm, rust]
+
+    listener ChatFilter on player.chat priority(lowest) {
+        guard event.message.contains_hate_speech()
+
+        cancel
+        actor.ban(reason="Zero tolerance policy", ip=true)
+        world.strike_lightning(actor.location)
+        notify discord.mod_channel, "Blocked & banned attacker: " + actor.name
+    }
+}

@@ -1,0 +1,19 @@
+module StagingSentinel {
+    version: "1.0.0"
+    target: [py, rust]
+
+    sentinel StagingFleetSupervisor {
+        interval: 30m
+        target: systemd("saori-staging-s2")
+
+        on failure {
+            quarantine_faulty_jars()
+            alert(operator="jack", channel="discord", throttle=12h)
+        }
+
+        on progress(port_ok) {
+            log "Fleet progress: " + port_ok.addon_name
+            # Suppress DMs when everything is healthy and no intervention is required
+        }
+    }
+}
