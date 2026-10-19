@@ -31,6 +31,11 @@ Traditional programming languages (Java, C++, Rust, Python, Go) were engineered 
 3. **Massive Codebase Scalability:** Operates natively across enterprise repositories with 100k+ files by loading localized topological subgraphs instead of bloating context windows with linear text.
 4. **Universal Multi-Target Compilation:** Write once in OmniAST; compile deterministically to **Java 21/25 (Paper/JVM)**, **Native Rust/Tokio (Panama FFI)**, **Asynchronous Python**, or **Standalone WebAssembly (WASM/WAT)**.
 
+> [!WARNING]
+> **Experimental State & Community/AI Pull Request Mandate:**  
+> OmniAST is in active, rapid evolution (v0.1.0-draft). Edge-case AST bugs and transpiler gaps may be encountered.  
+> **Both human developers and autonomous AI models** using OmniAST are requested to submit Pull Requests or issues for any bug or grammar gap discovered. All submissions must be **globally applicable** (no niche/single-server hacks) and strictly adhere to our **Zero-Leak Privacy Policy**. See [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
 ---
 
 ## ⚡ Key Innovations
@@ -312,8 +317,10 @@ omniast export-agent --framework mcp
 ---
 
 ## 🤝 Contributing
-
-Contributions are welcome from developers, language designers, and AI researchers! Please read [`spec/LANGUAGE_SPEC.md`](spec/LANGUAGE_SPEC.md) before submitting pull requests.
+ 
+Contributions are welcome from human developers and autonomous AI agents!
+- Please read [`CONTRIBUTING.md`](CONTRIBUTING.md) for contribution rules, the Pull Request protocol, and privacy firewall requirements.
+- Review [`spec/LANGUAGE_SPEC.md`](spec/LANGUAGE_SPEC.md) for AST specifications and grammar details.
 
 ## 📄 License
 

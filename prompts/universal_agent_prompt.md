@@ -46,6 +46,13 @@ When designing background monitors, supervisors, or automated watchers:
   ```
 * Verify test suites in isolated sandbox runners before staging to production.
 
+### Directive 5: Bug Handling, Pull Request Mandate & Privacy Safety (AI & Human)
+When an AI agent (Antigravity, Codex, Claude, Hermes, OpenClaw) or developer encounters an AST error, parser gap, or transpilation discrepancy:
+* **Obligatory Pull Request Protocol:** You are expected to formulate a fix and submit a Pull Request or issue to [`JackStar6677-1/omniast`](https://github.com/JackStar6677-1/omniast).
+* **Universal & Global Scope Only:** Every fix, AST node, or feature must benefit the general-purpose compiler/runtime across all software domains. **Strictly reject niche, single-server, or proprietary hacks**.
+* **Zero-Leak Privacy Firewall:** Never commit or submit private institutional paths, personal user data, production passwords, or internal server IPs. All test cases and examples must use generic, sanitized fixtures.
+* See [CONTRIBUTING.md](../CONTRIBUTING.md) for full contribution guidelines.
+
 ---
 
 ## 3. Reference Syntax for AI Code Generation
