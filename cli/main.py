@@ -9,6 +9,9 @@ import argparse
 import json
 import os
 
+# Ensure repository root is on sys.path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from core.kernel.engine import OmniASTKernel
 from transpilers.java_transpiler import JavaTranspiler
 from transpilers.python_transpiler import PythonTranspiler
@@ -25,7 +28,9 @@ def build_kernel() -> OmniASTKernel:
     k.register_transpiler("py", PythonTranspiler())
     k.register_transpiler("rust", RustTranspiler())
     k.register_transpiler("ts", TypeScriptTranspiler())
-    k.register_transpiler("wat", WasmTranspiler())
+    wasm_t = WasmTranspiler()
+    k.register_transpiler("wat", wasm_t)
+    k.register_transpiler("wasm", wasm_t)
     return k
 
 def main():

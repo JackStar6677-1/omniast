@@ -77,6 +77,19 @@ class RustTranspiler:
                     "    }",
                     ""
                 ])
+            elif node.type == "listener":
+                evt_name = node.metadata.get("event", "generic.event")
+                priority = node.metadata.get("priority", "normal")
+                guard = node.metadata.get("guard", "true")
+                lines.extend([
+                    f"    /// Event Listener: {node.name} (Event: {evt_name}, Priority: {priority})",
+                    f"    pub async fn handle_event_{node.name.lower()}(&self, event_payload: &str) -> bool {{",
+                    f"        // Guard condition: {guard}",
+                    f"        info!(\"[{node.name}] Handling event '{evt_name}' with payload len {{}}\", event_payload.len());",
+                    "        true // Event handled successfully",
+                    "    }",
+                    ""
+                ])
 
         lines.extend([
             "}",

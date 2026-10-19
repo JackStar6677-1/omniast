@@ -21,22 +21,51 @@ class PythonTranspiler:
             ""
         ]
 
+        tasks_to_run = []
+
         for node in module.nodes:
             if node.type == "sentinel":
                 interval = node.metadata.get("interval", "300s").replace("m", "*60").replace("s", "")
+                fn_name = f"run_sentinel_{node.name.lower()}"
+                tasks_to_run.append(f"daemon.{fn_name}()")
                 code.extend([
-                    f"    async def run_{node.name.lower()}(self):",
+                    f"    async def {fn_name}(self):",
                     f"        logger.info('Sentinel {node.name} active with interval {node.metadata.get('interval', '5m')}')",
                     "        while self.running:",
                     "            # Autonomous checks with anti-spam suppression",
                     f"            await asyncio.sleep({interval})",
                     ""
                 ])
+            elif node.type == "machine":
+                cap = node.metadata.get("capacity", "100000").replace("J", "").strip()
+                fn_name = f"run_machine_{node.name.lower()}"
+                tasks_to_run.append(f"daemon.{fn_name}()")
+                code.extend([
+                    f"    async def {fn_name}(self):",
+                    f"        logger.info('Industrial Machine {node.name} active with capacity {cap} J')",
+                    "        while self.running:",
+                    "            # Machine execution cycle (20 TPS tick rate)",
+                    "            await asyncio.sleep(0.05)",
+                    ""
+                ])
 
         code.extend([
             "async def main():",
             f"    daemon = {module.name}Daemon()",
-            "    # Launch sentinels",
+        ])
+
+        if tasks_to_run:
+            joined_tasks = ", ".join(tasks_to_run)
+            code.extend([
+                f"    logger.info('Launching {len(tasks_to_run)} autonomous background tasks for {module.name}...')",
+                f"    await asyncio.gather({joined_tasks})",
+            ])
+        else:
+            code.extend([
+                "    logger.info('OmniAST Daemon initialized (no background tasks registered).')",
+            ])
+
+        code.extend([
             "",
             "if __name__ == '__main__':",
             "    asyncio.run(main())"

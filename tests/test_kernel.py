@@ -25,6 +25,9 @@ class TestOmniASTKernel(unittest.TestCase):
         self.kernel.register_transpiler("py", PythonTranspiler())
         self.kernel.register_transpiler("rust", RustTranspiler())
         self.kernel.register_transpiler("ts", TypeScriptTranspiler())
+        wasm_t = WasmTranspiler()
+        self.kernel.register_transpiler("wat", wasm_t)
+        self.kernel.register_transpiler("wasm", wasm_t)
 
     def test_parse_simple_module(self):
         code = """
@@ -68,8 +71,9 @@ class TestOmniASTKernel(unittest.TestCase):
         mod = self.kernel.parse_source(code)
         py_code = self.kernel.transpile(mod, "py")
         self.assertIn("class SupervisorDaemon:", py_code)
-        self.assertIn("run_watcher", py_code)
+        self.assertIn("run_sentinel_watcher", py_code)
         self.assertIn("asyncio.sleep(15*60)", py_code)
+        self.assertIn("asyncio.gather(daemon.run_sentinel_watcher())", py_code)
 
     def test_transpile_rust(self):
         code = """
@@ -114,6 +118,22 @@ class TestOmniASTKernel(unittest.TestCase):
         self.assertIn("Core_run", wat_code)
         self.assertIn("omni_init", wat_code)
 
+    def test_kernel_transpile_wasm_and_wat(self):
+        code = """
+        module EdgeReactorDirect {
+            machine NodeX {
+                capacity: 20000J
+            }
+        }
+        """
+        mod = self.kernel.parse_source(code)
+        wat_code = self.kernel.transpile(mod, "wat")
+        self.assertIn("(module", wat_code)
+        self.assertIn("NodeX_run", wat_code)
+        # Target alias test
+        wat_code_alias = self.kernel.transpile(mod, "wasm")
+        self.assertIn("(module", wat_code_alias)
+
     def test_transpile_wasm_binary(self):
         code = """
         module NativeWasmModule {
@@ -127,6 +147,73 @@ class TestOmniASTKernel(unittest.TestCase):
         wasm_bytes = wasm_trans.transpile_to_wasm_binary(mod.to_dict())
         self.assertTrue(wasm_bytes.startswith(b"\x00asm\x01\x00\x00\x00"))
         self.assertGreaterEqual(len(wasm_bytes), 32)
+        # Test emit_binary
+        binary_direct = wasm_trans.emit_binary(mod)
+        self.assertEqual(wasm_bytes, binary_direct)
+
+    def test_ast_dict_and_json_roundtrip(self):
+        code = """
+        module SerializationMod {
+            version: "2.1.0"
+            targets: [jvm, py, rust]
+
+            listener ChatSecurity on player.chat {
+                guard message.is_valid()
+                priority: HIGH
+            }
+        }
+        """
+        mod = self.kernel.parse_source(code)
+        self.assertEqual(mod.version, "2.1.0")
+        self.assertEqual(mod.targets, ["jvm", "py", "rust"])
+        
+        # Test export and from_json roundtrip
+        json_str = mod.export_graph_json()
+        from core.kernel.engine import OmniASTModule
+        rehydrated = OmniASTModule.from_json(json_str)
+        self.assertEqual(rehydrated.name, "SerializationMod")
+        self.assertEqual(rehydrated.version, "2.1.0")
+        self.assertEqual(len(rehydrated.nodes), 1)
+        self.assertEqual(rehydrated.nodes[0].name, "ChatSecurity")
+        self.assertEqual(rehydrated.nodes[0].metadata.get("event"), "player.chat")
+        self.assertEqual(rehydrated.nodes[0].metadata.get("priority"), "HIGH")
+
+    def test_parse_comments_and_events(self):
+        code = """
+        # Global module comment
+        module CommentedMod {
+            // C-style comment
+            version: "1.5.0"
+            
+            listener JoinLogger on player.join {
+                guard player.is_whitelisted() # Inline comment
+                priority: NORMAL
+            }
+        }
+        """
+        mod = self.kernel.parse_source(code)
+        self.assertEqual(mod.name, "CommentedMod")
+        self.assertEqual(mod.version, "1.5.0")
+        self.assertEqual(len(mod.nodes), 1)
+        node = mod.nodes[0]
+        self.assertEqual(node.metadata.get("event"), "player.join")
+        self.assertEqual(node.metadata.get("priority"), "NORMAL")
+        self.assertIn("is_whitelisted", node.metadata.get("guard"))
+
+    def test_mcp_server_handle_call(self):
+        from mcp_server.server import handle_call
+        source = "module MCPTest { listener Ping on player.chat { guard true } }"
+        
+        # Test parse
+        res_parse = handle_call("omniast_parse", {"source_code": source})
+        self.assertTrue(res_parse["ok"])
+        self.assertEqual(res_parse["module"], "MCPTest")
+        
+        # Test transpile to rust, ts, wat
+        for target in ["jvm", "py", "rust", "ts", "wat", "wasm"]:
+            res_trans = handle_call("omniast_transpile", {"source_code": source, "target": target})
+            self.assertTrue(res_trans["ok"], f"MCP transpile failed for {target}")
+            self.assertTrue(len(res_trans["emitted_code"]) > 0)
 
     def test_hermes_and_openclaw_skills(self):
         registry = HermesSkillRegistry()

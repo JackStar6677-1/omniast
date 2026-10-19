@@ -15,10 +15,18 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from core.kernel.engine import OmniASTKernel
 from transpilers.java_transpiler import JavaTranspiler
 from transpilers.python_transpiler import PythonTranspiler
+from transpilers.rust_transpiler import RustTranspiler
+from transpilers.typescript_transpiler import TypeScriptTranspiler
+from transpilers.wasm_transpiler import WasmTranspiler
 
 kernel = OmniASTKernel()
 kernel.register_transpiler("jvm", JavaTranspiler())
 kernel.register_transpiler("py", PythonTranspiler())
+kernel.register_transpiler("rust", RustTranspiler())
+kernel.register_transpiler("ts", TypeScriptTranspiler())
+wasm_t = WasmTranspiler()
+kernel.register_transpiler("wat", wasm_t)
+kernel.register_transpiler("wasm", wasm_t)
 
 TOOLS = [
     {
@@ -37,7 +45,7 @@ TOOLS = [
     },
     {
         "name": "omniast_transpile",
-        "description": "Transpiles an OmniAST module directly to the target runtime (jvm or py).",
+        "description": "Transpiles an OmniAST module directly to the target runtime (jvm, py, rust, ts, wasm, wat).",
         "inputSchema": {
             "type": "object",
             "properties": {
@@ -47,7 +55,7 @@ TOOLS = [
                 },
                 "target": {
                     "type": "string",
-                    "enum": ["jvm", "py"],
+                    "enum": ["jvm", "py", "rust", "ts", "wasm", "wat"],
                     "description": "Target language or runtime platform."
                 }
             },

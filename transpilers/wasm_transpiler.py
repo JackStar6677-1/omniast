@@ -11,6 +11,21 @@ class WasmTranspiler:
     def __init__(self):
         pass
 
+    def emit(self, module) -> str:
+        """
+        Emits WebAssembly Text format (WAT) for a given OmniASTModule or AST dict.
+        Compatible with OmniASTKernel.transpile().
+        """
+        ast_dict = module.to_dict() if hasattr(module, "to_dict") else module
+        return self.transpile_to_wat(ast_dict)
+
+    def emit_binary(self, module) -> bytes:
+        """
+        Emits standard WebAssembly binary (WASM v1) for an OmniASTModule or AST dict.
+        """
+        ast_dict = module.to_dict() if hasattr(module, "to_dict") else module
+        return self.transpile_to_wasm_binary(ast_dict)
+
     def transpile_to_wat(self, ast: Dict[str, Any]) -> str:
         """Transpiles an OmniAST module into WebAssembly Text format (WAT)."""
         mod_name = ast.get("name", "OmniModule")
