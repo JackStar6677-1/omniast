@@ -126,18 +126,25 @@ cd omniast
 pip install -e .
 ```
 
-### Quick Run & Transpilation
+### Quick Run & CLI Usage
 
-Parse an OmniAST module and emit Java 21+ code:
-
-```bash
-python -m core.kernel.engine --input examples/odysseia_safety.omni --target jvm
-```
-
-Or transpile to an asynchronous Python daemon:
+OmniAST provides a unified CLI to parse, transpile, and inspect modules:
 
 ```bash
-python -m core.kernel.engine --input examples/sre_sentinel.omni --target py
+# 1. Parse an OmniAST module into an AST dependency graph
+omniast parse --input examples/industrial_machine.omni
+
+# 2. Transpile to Native Rust / Tokio with Panama FFI bindings
+omniast transpile --input examples/industrial_machine.omni --target rust --output ./dist/machine.rs
+
+# 3. Transpile to Java 21+ Paper / Spigot Plugin code
+omniast transpile --input examples/odysseia_safety.omni --target jvm --output ./dist/SafetyPlugin.java
+
+# 4. Transpile to Asynchronous Python SRE Daemon
+omniast transpile --input examples/sre_sentinel.omni --target py --output ./dist/sentinel.py
+
+# 5. Run the Kernel Test Suite
+python -m unittest discover -s tests
 ```
 
 ---
@@ -166,11 +173,12 @@ Equip your AI agent with [`prompts/universal_agent_prompt.md`](prompts/universal
 
 ## 🧭 Project Roadmap
 
-- [x] **Phase 1: Concept & Initial Architecture** (Kernel data structures, AST definitions, reference banner).
-- [ ] **Phase 2: Tree-Sitter Grammar (`tree-sitter-omniast`)** (Formal grammar definition, syntax highlighting for VS Code & Neovim).
-- [ ] **Phase 3: Java 21+ Transpiler & Spigot/Paper SDK** (Direct bytecode & source emission with Panama FFI support).
-- [ ] **Phase 4: Agent Driver & Graphify Bridge** (Native MCP tool allowing Claude, Codex, and Antigravity to generate and mutate OmniAST directly).
-- [ ] **Phase 5: Self-Hosting Runtime** (Compiling OmniAST to native WebAssembly & Rust binaries).
+- [x] **Phase 1: Concept & Initial Architecture** (Kernel data structures, AST definitions, animated banner).
+- [x] **Phase 2: Core Transpiler Suite** (Java 21+ Paper/Spigot, Asynchronous Python SRE, Native Rust/Tokio FFI).
+- [x] **Phase 3: Agent Driver & MCP Server** (Native JSON-RPC 2.0 MCP server for Claude, Codex, Antigravity, DeepSeek, Grok).
+- [x] **Phase 4: Unified CLI & Test Suite** (`omniast` command-line interface, automated unit tests, GitHub Actions CI).
+- [ ] **Phase 5: Tree-Sitter Grammar (`tree-sitter-omniast`)** (Formal grammar definition, syntax highlighting for VS Code & Neovim).
+- [ ] **Phase 6: Self-Hosting Runtime** (Compiling OmniAST to native WebAssembly & standalone binaries).
 
 ---
 

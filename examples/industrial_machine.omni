@@ -1,0 +1,14 @@
+module QuantumCapacitor {
+    version: "1.0.0"
+    target: [rust, jvm]
+
+    machine PrimaryCapacitor {
+        capacity: 250000J
+        charge_rate: 2000J/s
+        discharge_rate: 4000J/s
+
+        on tick {
+            balance_energy_grid()
+        }
+    }
+}
