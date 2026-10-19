@@ -140,6 +140,28 @@ python -m core.kernel.engine --input examples/sre_sentinel.omni --target py
 
 ---
 
+## 🤖 AI Agent & MCP Integration (Zero Context Exhaustion)
+
+OmniAST ships with a native **Model Context Protocol (MCP)** server and universal agent prompt. Any AI coding assistant (Antigravity, Codex, Claude, DeepSeek, Grok) can connect to the OmniAST Kernel to operate on code graphs and transpile intents:
+
+### MCP Server Configuration (`mcp.json`)
+
+```json
+{
+  "mcpServers": {
+    "omniast": {
+      "command": "python",
+      "args": ["/path/to/omniast/mcp_server/server.py"]
+    }
+  }
+}
+```
+
+### Universal Agent Prompt
+Equip your AI agent with [`prompts/universal_agent_prompt.md`](prompts/universal_agent_prompt.md). The agent will automatically adopt graph-first navigation, bypass linear file scans, formulate code in `.omni` declarative blocks, and enforce **Zero-Noise Alert Throttling** for automated daemons.
+
+---
+
 ## 🧭 Project Roadmap
 
 - [x] **Phase 1: Concept & Initial Architecture** (Kernel data structures, AST definitions, reference banner).
