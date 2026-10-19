@@ -269,12 +269,33 @@ Open your browser at `http://localhost:8089/dashboard` to inspect real-time agen
 
 ---
 
-## 🦅 Hermes & OpenClaw Skills Ecosystem
+## 🦅 Agentic Framework Ecosystem (Hermes Agent · OpenClaw · SAORI)
 
-OmniAST bridges the graph kernel directly into **Nous Hermes** (JSON Schema Function Calling) and **OpenClaw** (TypeScript multi-channel gateway) agent architectures:
+OmniAST bridges the graph kernel directly into leading autonomous AI architectures, enabling any agent to manipulate code with **85% fewer tokens**:
 
-* **Hermes Function Calling:** Native support for tool calls (`omniast_query_graph`, `omniast_mutate_node`, `openclaw_dispatch_message`, `openclaw_exec_sandboxed`, `shared_memory_recall`).
-* **OpenClaw Multi-Gateway:** Exportable plugin manifests allowing OpenClaw daemons to dispatch actions across Discord, WhatsApp, In-Game RCON, and Web Consoles.
+### 1. [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent) Native Skill
+* **Drop-in Skill:** Located in [`integrations/hermes_agent/omniast_hermes_skill.py`](integrations/hermes_agent/omniast_hermes_skill.py). Drop into `~/.hermes/skills/omniast/` to give Hermes Agent native graph AST parsing and cross-compilation tools.
+* **RL & Fine-Tuning Trajectories:** Natively records interactions in ShareGPT / Hermes format via `omniast_record_trajectory`, allowing teams to fine-tune future Hermes checkpoints on OmniAST reasoning paths.
+
+### 2. [OpenClaw](https://github.com/openclaw/openclaw) Plugin
+* **TypeScript Omnichannel Plugin:** Located in [`integrations/openclaw/`](integrations/openclaw/). Enables OpenClaw daemons (90% TS) to route code generation and SRE triage across Discord, WhatsApp, In-Game RCON, and Webhooks.
+
+### 3. [SAORI](https://github.com/JackStar6677-1/saori) Core & SRE Swarm
+* **Bridge & Shared Memory:** Located in [`integrations/saori/saori_omniast_bridge.py`](integrations/saori/saori_omniast_bridge.py). Bridges the Multi-Account Model Broker (Antigravity Prime/Backup, Codex Terra/Luna, Claude Opus/Haiku) with SQLite WAL shared memory.
+
+### 4. Universal Agent Adapter (Any Framework)
+Export native configuration files for any agent framework in a single terminal command:
+```bash
+# Export Hermes Agent Function Calling Schemas
+omniast export-agent --framework hermes
+
+# Export OpenClaw Plugin Manifest
+omniast export-agent --framework openclaw
+
+# Export Standard MCP Tool Manifest
+omniast export-agent --framework mcp
+```
+
 * **Architectural Blueprint:** Read the complete master study on unifying SAORI, OpenClaw, Hermes, and OmniAST in [`docs/architecture/SAORI_OPENCLAW_HERMES_UNIFICATION.md`](docs/architecture/SAORI_OPENCLAW_HERMES_UNIFICATION.md).
 
 ---

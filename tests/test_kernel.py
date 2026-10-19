@@ -184,5 +184,41 @@ class TestOmniASTKernel(unittest.TestCase):
         anti2 = broker.acquire_account("antigravity")
         self.assertEqual(anti2.id, "antigravity-2")
 
+    def test_hermes_agent_and_universal_adapter(self):
+        from integrations.hermes_agent.omniast_hermes_skill import HermesAgentOmniASTSkill, HERMES_AGENT_TOOLS
+        from integrations.universal_agent_adapter import UniversalAgentAdapter
+
+        # 1. Verify Hermes-Agent Skill
+        skill = HermesAgentOmniASTSkill()
+        code = """
+        module HermesTestMod {
+            sentinel Watcher {
+                interval: 10m
+            }
+        }
+        """
+        parse_res = skill.parse_graph(code)
+        self.assertEqual(parse_res["status"], "success")
+        self.assertEqual(parse_res["module"], "HermesTestMod")
+
+        trans_res = skill.transpile_code(code, "ts")
+        self.assertEqual(trans_res["status"], "success")
+        self.assertIn("HermesTestModModule", trans_res["code"])
+
+        # 2. Verify ShareGPT Trajectory Recording for Nous Research Fine-tuning
+        traj = skill.record_learning_trajectory("Create a sentinel that runs every 10m", code, reward=1.0)
+        self.assertEqual(traj["status"], "recorded")
+        self.assertEqual(len(skill.export_sharegpt_dataset()), 1)
+
+        # 3. Verify Universal Agent Adapter
+        adapter = UniversalAgentAdapter()
+        fws = adapter.get_supported_frameworks()
+        self.assertTrue(any("hermes" in f for f in fws))
+        self.assertTrue(any("openclaw" in f for f in fws))
+        self.assertTrue(any("saori" in f for f in fws))
+
+        exec_res = adapter.execute_agent_tool("omni_parse", {"code": code})
+        self.assertEqual(exec_res["status"], "ok")
+
 if __name__ == "__main__":
     unittest.main()

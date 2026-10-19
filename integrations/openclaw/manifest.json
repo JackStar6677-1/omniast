@@ -1,0 +1,27 @@
+{
+  "id": "omniast-kernel",
+  "name": "OmniAST Graph & Compiler Kernel",
+  "version": "0.1.0",
+  "entrypoint": "./index.ts",
+  "capabilities": [
+    "ast:parse",
+    "ast:mutate",
+    "compiler:transpile",
+    "telemetry:tokens"
+  ],
+  "permissions": {
+    "sandbox": false,
+    "filesystem": "read-write",
+    "network": false
+  },
+  "commands": [
+    {
+      "name": "omni_parse",
+      "description": "Parse source into a token-efficient AST dependency graph"
+    },
+    {
+      "name": "omni_transpile",
+      "description": "Compile OmniAST to TypeScript, JVM, Rust, or WebAssembly"
+    }
+  ]
+}

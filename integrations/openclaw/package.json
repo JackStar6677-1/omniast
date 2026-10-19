@@ -1,0 +1,22 @@
+{
+  "name": "openclaw-plugin-omniast",
+  "version": "0.1.0",
+  "description": "OmniAST Graph & Code Generation Plugin for OpenClaw Autonomous Agents",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [
+    "openclaw",
+    "omniast",
+    "agent-plugin",
+    "ast-kernel",
+    "token-reducer"
+  ],
+  "author": "JackStar6677-1",
+  "license": "MIT",
+  "peerDependencies": {
+    "openclaw": ">=0.5.0"
+  }
+}

@@ -1,8 +1,7 @@
 """
 OmniAST / GraphLang Command Line Interface (CLI)
-Allows parsing, transpiling, inspecting OmniAST modules, and managing multi-account AI pools.
-Supports JVM (Java 21+), Native Rust/Tokio, Python Asyncio, TypeScript/Node.js, and WebAssembly (WASM/WAT).
-Integrates Hermes Function Calling schemas, OpenClaw Skills, and SAORI Multi-Account Broker.
+Allows parsing, transpiling, inspecting OmniAST modules, managing multi-account AI pools,
+and exporting native integrations for NousResearch/hermes-agent, OpenClaw, SAORI, and MCP.
 """
 
 import sys
@@ -18,6 +17,7 @@ from transpilers.typescript_transpiler import TypeScriptTranspiler
 from transpilers.wasm_transpiler import WasmTranspiler
 from core.skills.hermes_openclaw import HermesSkillRegistry
 from sre.models.multi_account_broker import MultiAccountBroker
+from integrations.universal_agent_adapter import UniversalAgentAdapter
 
 def build_kernel() -> OmniASTKernel:
     k = OmniASTKernel()
@@ -59,6 +59,15 @@ def main():
     acc_cmd = subparsers.add_parser("accounts", help="Manage and inspect multi-account AI pools (Antigravity, Codex, Claude, etc.)")
     acc_cmd.add_argument("--provider", "-p", help="Filter by provider (antigravity, codex, claude, deepseek, grok)")
     acc_cmd.add_argument("--json", action="store_true", help="Output raw telemetry JSON")
+
+    # Command: export-agent (Universal Agent Integration)
+    exp_cmd = subparsers.add_parser("export-agent", help="Export native configuration for NousResearch/hermes-agent, OpenClaw, SAORI, or MCP")
+    exp_cmd.add_argument(
+        "--framework", "-f",
+        choices=["hermes", "openclaw", "saori", "mcp"],
+        required=True,
+        help="Target agentic framework"
+    )
 
     # Command: prompt
     subparsers.add_parser("prompt", help="Display the Universal Token-Saver prompt for AI models")
@@ -145,6 +154,15 @@ def main():
                     avail = "READY" if acc['available'] else f"SLEEPING ({acc['sleeping_seconds_left']}s)"
                     print(f"  • {acc['id']:<15} | {acc['name']:<30} | {status_badge:<12} | Latency: {acc['latency_ms']}ms | State: {avail}")
             print("\n==========================================================================")
+
+    elif args.command == "export-agent":
+        adapter = UniversalAgentAdapter()
+        res = adapter.export_tools_for_framework(args.framework)
+        print(f"// ==========================================================================")
+        print(f"// OmniAST Universal Agent Export: {args.framework.upper()}")
+        print(f"// Compatible with: NousResearch/hermes-agent, OpenClaw, SAORI, and MCP")
+        print(f"// ==========================================================================")
+        print(json.dumps(res, indent=2))
 
     elif args.command == "prompt":
         prompt_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "prompts", "universal_agent_prompt.md")
