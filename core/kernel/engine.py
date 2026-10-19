@@ -30,6 +30,14 @@ class OmniASTModule:
     targets: List[str]
     nodes: List[ASTNode] = field(default_factory=list)
 
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "name": self.name,
+            "version": self.version,
+            "targets": self.targets,
+            "nodes": [n.to_dict() for n in self.nodes]
+        }
+
     def export_graph_json(self) -> str:
         return json.dumps({
             "module": self.name,

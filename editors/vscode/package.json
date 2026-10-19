@@ -1,0 +1,30 @@
+{
+  "name": "omniast-lang",
+  "displayName": "OmniAST / GraphLang",
+  "description": "Syntax highlighting and language support for OmniAST (GraphLang) - the universal AST kernel for AI coding models.",
+  "version": "0.1.0",
+  "publisher": "JackStar6677-1",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "omniast",
+        "aliases": ["OmniAST", "omniast", "GraphLang", "omni"],
+        "extensions": [".omni", ".omniast", ".glang"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "omniast",
+        "scopeName": "source.omniast",
+        "path": "./syntaxes/omniast.tmLanguage.json"
+      }
+    ]
+  }
+}

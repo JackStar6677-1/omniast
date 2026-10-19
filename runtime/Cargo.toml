@@ -1,0 +1,29 @@
+[package]
+name = "omniast-runtime"
+version = "0.1.0"
+edition = "2021"
+authors = ["JackStar6677-1"]
+description = "Native self-hosting execution engine and WebAssembly compiler for OmniAST (GraphLang)"
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "omniast-runtime"
+path = "src/main.rs"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+wasm-bindgen = { version = "0.2", optional = true }
+
+[features]
+default = []
+wasm = ["wasm-bindgen"]
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"

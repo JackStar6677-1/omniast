@@ -1,6 +1,7 @@
 """
 OmniAST / GraphLang Command Line Interface (CLI)
 Allows parsing, transpiling, and inspecting OmniAST modules directly from the terminal.
+Supports JVM (Java 21+), Native Rust/Tokio, Python Asyncio, and WebAssembly (WASM/WAT).
 """
 
 import sys
@@ -12,12 +13,14 @@ from core.kernel.engine import OmniASTKernel
 from transpilers.java_transpiler import JavaTranspiler
 from transpilers.python_transpiler import PythonTranspiler
 from transpilers.rust_transpiler import RustTranspiler
+from transpilers.wasm_transpiler import WasmTranspiler
 
 def build_kernel() -> OmniASTKernel:
     k = OmniASTKernel()
     k.register_transpiler("jvm", JavaTranspiler())
     k.register_transpiler("py", PythonTranspiler())
     k.register_transpiler("rust", RustTranspiler())
+    k.register_transpiler("wat", WasmTranspiler())
     return k
 
 def main():
@@ -35,7 +38,12 @@ def main():
     # Command: transpile
     trans_cmd = subparsers.add_parser("transpile", help="Transpile an .omni source file to target runtime")
     trans_cmd.add_argument("--input", "-i", required=True, help="Path to .omni source file")
-    trans_cmd.add_argument("--target", "-t", choices=["jvm", "py", "rust"], required=True, help="Target platform (jvm, py, rust)")
+    trans_cmd.add_argument(
+        "--target", "-t",
+        choices=["jvm", "py", "rust", "wasm", "wat"],
+        required=True,
+        help="Target platform (jvm, py, rust, wasm, wat)"
+    )
     trans_cmd.add_argument("--output", "-o", help="Optional output file path")
 
     # Command: prompt
@@ -66,14 +74,35 @@ def main():
         with open(args.input, "r", encoding="utf-8") as f:
             code = f.read()
         module = kernel.parse_source(code)
-        result = kernel.transpile(module, args.target)
-        if args.output:
-            os.makedirs(os.path.dirname(os.path.abspath(args.output)), exist_ok=True)
-            with open(args.output, "w", encoding="utf-8") as out:
-                out.write(result)
-            print(f"[OK] Transpiled {args.target.upper()} code saved to {args.output}")
+
+        if args.target == "wasm":
+            wasm_trans = WasmTranspiler()
+            binary_wasm = wasm_trans.transpile_to_wasm_binary(module.to_dict())
+            out_path = args.output or "out.wasm"
+            if os.path.dirname(out_path):
+                os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
+            with open(out_path, "wb") as out:
+                out.write(binary_wasm)
+            print(f"[OK] Compiled standalone WebAssembly binary ({len(binary_wasm)} bytes) saved to {out_path}")
+        elif args.target == "wat":
+            wasm_trans = WasmTranspiler()
+            result = wasm_trans.transpile_to_wat(module.to_dict())
+            if args.output:
+                os.makedirs(os.path.dirname(os.path.abspath(args.output)), exist_ok=True)
+                with open(args.output, "w", encoding="utf-8") as out:
+                    out.write(result)
+                print(f"[OK] Transpiled WebAssembly Text (WAT) saved to {args.output}")
+            else:
+                print(result)
         else:
-            print(result)
+            result = kernel.transpile(module, args.target)
+            if args.output:
+                os.makedirs(os.path.dirname(os.path.abspath(args.output)), exist_ok=True)
+                with open(args.output, "w", encoding="utf-8") as out:
+                    out.write(result)
+                print(f"[OK] Transpiled {args.target.upper()} code saved to {args.output}")
+            else:
+                print(result)
 
     elif args.command == "prompt":
         prompt_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "prompts", "universal_agent_prompt.md")

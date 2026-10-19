@@ -5,28 +5,30 @@
 </div>
 
 <p align="center">
-  <strong>The Universal Graph-Native Kernel & Declarative AST for Autonomous AI Systems, Game Engines & Distributed SRE</strong>
+  <strong>The Universal Graph-Native Kernel & Declarative AST for Autonomous AI Systems, Massive Codebases, High-Concurrency Engines & Distributed SRE</strong>
 </p>
 
 <p align="center">
   <a href="#key-innovations"><img src="https://img.shields.io/badge/Architecture-Graph--Native-38BDF8?style=flat-square" alt="Graph Native"></a>
   <a href="#token-efficiency"><img src="https://img.shields.io/badge/LLM_Efficiency-85%25_Token_Reduction-818CF8?style=flat-square" alt="Token Saver"></a>
-  <a href="#supported-targets"><img src="https://img.shields.io/badge/Targets-Java_21+_·_Rust_·_Python-F472B6?style=flat-square" alt="Multi Target"></a>
-  <a href="#license"><img src="https://img.shields.io/badge/License-MIT-34D399?style=flat-square" alt="MIT License"></a>
+  <a href="#supported-targets"><img src="https://img.shields.io/badge/Targets-Java_21+_·_Rust_·_Python_·_WASM-F472B6?style=flat-square" alt="Multi Target"></a>
+  <a href="#tree-sitter-grammar"><img src="https://img.shields.io/badge/Tree--Sitter-Grammar_Ready-34D399?style=flat-square" alt="Tree Sitter"></a>
+  <a href="#license"><img src="https://img.shields.io/badge/License-MIT-FBBF24?style=flat-square" alt="MIT License"></a>
 </p>
 
 ---
 
 ## 🌌 What is OmniAST (GraphLang)?
 
-**OmniAST** (also known as **GraphLang**) is an intermediate, declarative programming language and kernel runtime engineered for the new paradigm of software development: **collaboration between autonomous AI models (Google DeepMind Antigravity, OpenAI Codex, Anthropic Claude, DeepSeek, Grok) and high-throughput execution engines.**
+**OmniAST** (also known as **GraphLang**) is an intermediate, declarative programming language, compiler infrastructure, and kernel runtime engineered for the modern software paradigm: **collaboration between autonomous AI models (Google DeepMind Antigravity, OpenAI Codex, Anthropic Claude, DeepSeek, Grok) and massive, high-throughput software architectures.**
 
-Traditional programming languages (Java, C++, Rust, Python) were designed decades ago for humans typing characters in linear text files. They are full of syntactic ceremonies: thousands of redundant lines of imports, boilerplate classes, verbose access modifiers, and complex packaging structures. When modern AI models read and reason through these files, **millions of tokens are wasted on boilerplate rather than architecture and logic**.
+Traditional programming languages (Java, C++, Rust, Python, Go) were engineered decades ago for humans typing characters into flat ASCII text files. They are filled with ceremonial syntactic overhead: thousands of redundant import statements, repetitive type declarations, package definitions, access modifiers, and file-system hierarchies. When modern AI models read and reason through these codebases, **millions of tokens are wasted on boilerplate syntax rather than core business logic and system architecture**.
 
-**OmniAST changes this equation:**
-1. **Direct AST Representation:** Code is authored and represented directly as an **Executable Abstract Syntax Tree & Dependency Graph**.
+**OmniAST changes this equation fundamentally:**
+1. **Direct AST & Graph Representation:** Code is authored, navigated, and represented directly as an **Executable Abstract Syntax Tree & Dependency Graph**.
 2. **Universal AI Interoperability:** Any AI agent or human can read, mutate, query, and verify complete architectures with minimal token cost.
-3. **Multi-Target Transpilation:** Write once in OmniAST; transpile deterministically to **Java 21/25 (Paper/Spigot)**, **Native Rust/Tokio**, or **Asynchronous Python**.
+3. **Massive Codebase Scalability:** Operates natively across enterprise repositories with 100k+ files by loading localized topological subgraphs instead of bloating context windows with linear text.
+4. **Universal Multi-Target Compilation:** Write once in OmniAST; compile deterministically to **Java 21/25 (Paper/JVM)**, **Native Rust/Tokio (Panama FFI)**, **Asynchronous Python**, or **Standalone WebAssembly (WASM/WAT)**.
 
 ---
 
@@ -51,26 +53,36 @@ Traditional programming languages (Java, C++, Rust, Python) were designed decade
                        │     Typecheck · Validate · Transpile    │
                        └────────────────────┬────────────────────┘
                                             │
-           ┌────────────────────────────────┼────────────────────────────────┐
-           ▼                                ▼                                ▼
-  ┌──────────────────┐             ┌──────────────────┐             ┌──────────────────┐
-  │  JVM (Java 21+)  │             │  Native (Rust)   │             │ Asynchronous Py  │
-  │  Paper / Purpur  │             │  Zero-Cost LLVM  │             │ SRE Sentinels    │
-  │  Minecraft Engine│             │  Panama Java FFI │             │ Fleet Automations│
-  └──────────────────┘             └──────────────────┘             └──────────────────┘
+           ┌─────────────────┬──────────────┴───────┬─────────────────┐
+           ▼                 ▼                      ▼                 ▼
+  ┌──────────────────┐ ┌───────────────┐  ┌──────────────────┐ ┌───────────────┐
+  │  JVM (Java 21+)  │ │ Native (Rust) │  │ Asynchronous Py  │ │ WebAssembly   │
+  │  Paper / Purpur  │ │ Tokio / LLVM  │  │ SRE Sentinels    │ │ Edge / WASI   │
+  │  Enterprise Apps │ │ Panama FFI    │  │ Fleet Monitoring │ │ Browser Engine│
+  └──────────────────┘ └───────────────┘  └──────────────────┘ └───────────────┘
 ```
 
-* **Token-Efficient by Design:** Cuts down model context consumption by 70% to 85% compared to raw Java or C++.
-* **Engine-Agnostic & Native Interop:** Ideal for game server extensions (like Paper/Spigot plugins), multi-agent swarms, SRE automation, and industrial networks.
-* **AST First, Text Second:** Fully integrated with Tree-sitter and AST graph databases for instant topological querying and zero-cost structural diffs.
+* **Token-Efficient by Design:** Cuts down model context consumption by 70% to 85% compared to raw Java, Rust, or C++.
+* **Scale Without Context Exhaustion:** Models can modify complex logic across thousands of classes without hitting context limits by querying only connected AST subgraphs.
+* **Domain-Agnostic:** Built for distributed cloud services, high-concurrency microservices, industrial automation, and game server engines alike.
+* **AST First, Text Second:** Fully backed by a Tree-sitter formal grammar and AST graph databases for instant topological querying and zero-cost structural diffs.
+
+---
+
+## 🏢 Enterprise & Massive Codebase Architecture (Beyond Game Engines)
+
+While OmniAST was demonstrated in high-concurrency event-driven platforms (such as Minecraft Paper/Purpur game servers), its design is **strictly domain-agnostic and built for hyperscale systems**:
+
+- **Enterprise Microservices:** Define distributed state machines, gRPC interfaces, and idempotent transactional gates across hundreds of microservices.
+- **Event-Driven Cloud Backends:** Express Kafka/RabbitMQ consumer logic, circuit breakers, and rate limiters declaratively in under 15 lines of IR.
+- **Autonomous SRE & Self-Healing Swarms:** Sentinel nodes continuously observe distributed infrastructure, quarantine regression candidates, and throttle alerts to eliminate on-call alert fatigue.
+- **Cross-Language Code Migration:** Ingest legacy Java or Python codebases into OmniAST's unified graph representation and re-emit them into high-performance Rust or WebAssembly.
 
 ---
 
 ## 🛠️ Code Examples
 
-### 1. In-Engine Safety & Event Routing (e.g. Minecraft / Paper)
-
-Traditional Java requires 150+ lines across multiple classes, annotations, listener registrations, and plugin loaders. In **OmniAST**, the entire intent is declared cleanly:
+### 1. In-Engine Safety & Event Routing (JVM / Rust target)
 
 ```omniast
 module OdysseiaSafety {
@@ -88,9 +100,7 @@ module OdysseiaSafety {
 }
 ```
 
-### 2. Autonomous SRE Sentinel & Daemon
-
-Replaces fragile multi-file Python scripts with self-healing, declarative supervisor logic:
+### 2. Autonomous SRE Sentinel & Daemon (Python / Rust target)
 
 ```omniast
 module StagingSentinel {
@@ -99,11 +109,11 @@ module StagingSentinel {
 
     sentinel StagingFleetSupervisor {
         interval: 30m
-        target: systemd("saori-staging-s2")
+        target: systemd("production-fleet-service")
 
         on failure {
             quarantine_faulty_jars()
-            alert(operator="jack", channel="discord", throttle=12h)
+            alert(operator="admin", channel="discord", throttle=12h)
         }
 
         on progress(port_ok) {
@@ -112,6 +122,63 @@ module StagingSentinel {
         }
     }
 }
+```
+
+### 3. Industrial Mechanics & High-Throughput Energy Buffers (WASM / Rust target)
+
+```omniast
+module QuantumPowerGrid {
+    version: "1.0.0"
+    target: [rust, wasm]
+
+    machine QuantumCapacitor : EnergyStorage {
+        capacity: 250000 J
+        rate: 2000 J/s
+
+        on tick(delta) {
+            if network.has_deficit {
+                route self.stored -> network.bus, max=rate
+            }
+        }
+    }
+}
+```
+
+---
+
+## 🌳 Phase 5: Tree-Sitter Grammar & Editor Tooling
+
+OmniAST features a complete formal **Tree-sitter grammar (`tree-sitter-omniast`)** supporting instant syntax highlighting, code folding, and semantic scope resolution:
+
+- **Formal Grammar:** [`tree-sitter-omniast/grammar.js`](tree-sitter-omniast/grammar.js)
+- **Queries:**
+  - Highlighting: [`tree-sitter-omniast/queries/highlights.scm`](tree-sitter-omniast/queries/highlights.scm)
+  - Scopes & Locals: [`tree-sitter-omniast/queries/locals.scm`](tree-sitter-omniast/queries/locals.scm)
+  - Code Folding: [`tree-sitter-omniast/queries/folds.scm`](tree-sitter-omniast/queries/folds.scm)
+  - Auto-Indents: [`tree-sitter-omniast/queries/indents.scm`](tree-sitter-omniast/queries/indents.scm)
+
+### VS Code Extension
+Installable from [`editors/vscode`](editors/vscode):
+- Provides native `.omni` and `.omniast` language detection.
+- Full TextMate & Tree-sitter grammar support with dark/light theme integration.
+
+### Neovim Integration
+Add to your Neovim configuration via `nvim-treesitter`. See [`editors/neovim/README.md`](editors/neovim/README.md) for step-by-step instructions.
+
+---
+
+## ⚡ Phase 6: Self-Hosting Runtime & WebAssembly (WASM)
+
+OmniAST provides a dual self-hosting execution runtime:
+1. **Native Standalone Engine (`runtime/`):** Written in Rust with zero-allocation AST structures, cycle detection, and Panama FFI bindings.
+2. **WebAssembly Compiler:** Compiles `.omni` modules into validated WebAssembly binary (`.wasm`) or WebAssembly Text (`.wat`) for browser-based sandboxes, Node.js edge workers, and Cloudflare Workers.
+
+```bash
+# Compile directly to WebAssembly Binary (.wasm)
+omniast transpile --input examples/industrial_machine.omni --target wasm --output dist/machine.wasm
+
+# Transpile to WebAssembly Text representation (.wat)
+omniast transpile --input examples/industrial_machine.omni --target wat --output dist/machine.wat
 ```
 
 ---
@@ -126,9 +193,7 @@ cd omniast
 pip install -e .
 ```
 
-### Quick Run & CLI Usage
-
-OmniAST provides a unified CLI to parse, transpile, and inspect modules:
+### CLI Quickstart
 
 ```bash
 # 1. Parse an OmniAST module into an AST dependency graph
@@ -143,7 +208,10 @@ omniast transpile --input examples/odysseia_safety.omni --target jvm --output ./
 # 4. Transpile to Asynchronous Python SRE Daemon
 omniast transpile --input examples/sre_sentinel.omni --target py --output ./dist/sentinel.py
 
-# 5. Run the Kernel Test Suite
+# 5. Compile to Standalone WebAssembly Binary
+omniast transpile --input examples/industrial_machine.omni --target wasm --output ./dist/machine.wasm
+
+# 6. Run the Kernel Test Suite
 python -m unittest discover -s tests
 ```
 
@@ -151,7 +219,7 @@ python -m unittest discover -s tests
 
 ## 🤖 AI Agent & MCP Integration (Zero Context Exhaustion)
 
-OmniAST ships with a native **Model Context Protocol (MCP)** server and universal agent prompt. Any AI coding assistant (Antigravity, Codex, Claude, DeepSeek, Grok) can connect to the OmniAST Kernel to operate on code graphs and transpile intents:
+OmniAST ships with a native **Model Context Protocol (MCP)** server and universal agent prompt. Any AI assistant (Antigravity, Codex, Claude, DeepSeek, Grok) can connect to the OmniAST Kernel:
 
 ### MCP Server Configuration (`mcp.json`)
 
@@ -173,7 +241,7 @@ Equip your AI agent with [`prompts/universal_agent_prompt.md`](prompts/universal
 
 ## 🌐 SRE Multi-Agent Swarm & Live Web Console
 
-OmniAST features an autonomous **Site Reliability Engineering (SRE) Swarm** designed for multi-tenant, multi-repository continuous repair. Rather than relying on static scripts, pooled AI models (Antigravity, Codex, Claude, DeepSeek, Grok) act concurrently as automated software engineers:
+OmniAST features an autonomous **Site Reliability Engineering (SRE) Swarm** designed for multi-tenant, multi-repository continuous repair:
 
 * **Autonomous Code Repair:** Detects syntax failures, concurrency leaks, and null pointers; formulates minimal patch deltas.
 * **Proactive Code Suggestions:** Suggests architectural and performance improvements based on AST node dependencies.
@@ -195,8 +263,8 @@ Open your browser at `http://localhost:8089/dashboard` to inspect real-time agen
 - [x] **Phase 2: Core Transpiler Suite** (Java 21+ Paper/Spigot, Asynchronous Python SRE, Native Rust/Tokio FFI).
 - [x] **Phase 3: Agent Driver & MCP Server** (Native JSON-RPC 2.0 MCP server for Claude, Codex, Antigravity, DeepSeek, Grok).
 - [x] **Phase 4: Unified CLI & Test Suite** (`omniast` command-line interface, automated unit tests, GitHub Actions CI).
-- [ ] **Phase 5: Tree-Sitter Grammar (`tree-sitter-omniast`)** (Formal grammar definition, syntax highlighting for VS Code & Neovim).
-- [ ] **Phase 6: Self-Hosting Runtime** (Compiling OmniAST to native WebAssembly & standalone binaries).
+- [x] **Phase 5: Tree-Sitter Grammar (`tree-sitter-omniast`)** (Formal grammar definition, syntax highlighting for VS Code & Neovim).
+- [x] **Phase 6: Self-Hosting Runtime** (Compiling OmniAST to native WebAssembly & standalone binaries).
 
 ---
 

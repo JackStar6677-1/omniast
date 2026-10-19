@@ -1,0 +1,34 @@
+{
+  "name": "tree-sitter-omniast",
+  "version": "0.1.0",
+  "description": "Tree-sitter grammar for OmniAST / GraphLang",
+  "main": "bindings/node",
+  "keywords": [
+    "parser",
+    "lexer",
+    "tree-sitter",
+    "omniast",
+    "graphlang",
+    "ast",
+    "ai-kernel"
+  ],
+  "author": "JackStar6677-1",
+  "license": "MIT",
+  "dependencies": {
+    "nan": "^2.19.0"
+  },
+  "devDependencies": {
+    "tree-sitter-cli": "^0.22.6"
+  },
+  "tree-sitter": [
+    {
+      "scope": "source.omniast",
+      "file-types": ["omni", "omniast", "glang"],
+      "injection-regex": "^(omni|omniast|graphlang)$",
+      "highlights": "queries/highlights.scm",
+      "locals": "queries/locals.scm",
+      "folds": "queries/folds.scm",
+      "indents": "queries/indents.scm"
+    }
+  ]
+}
