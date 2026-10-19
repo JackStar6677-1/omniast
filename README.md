@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/JackStar6677-1/omniast/main/assets/banner.svg" alt="OmniAST / GraphLang — The Universal Graph-Native Kernel for Autonomous AI Systems & Engine Interop" width="100%" />
+<img src="https://raw.githubusercontent.com/JackStar6677-1/omniast/main/banner.svg" alt="OmniAST / GraphLang Banner" width="100%" />
 
 </div>
 

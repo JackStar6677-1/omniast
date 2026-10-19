@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 440" width="1200" height="440" role="img" aria-label="OmniAST / GraphLang — The Universal Graph-Native Kernel for Autonomous AI Systems & Engine Interop">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 440" width="1200" height="440" role="img" aria-label="OmniAST / GraphLang — The Universal Graph-Native Kernel for Autonomous AI Systems &amp; Engine Interop">
   <defs>
-    <!-- Background void & celestial nebulae -->
+    <!-- Background void &amp; celestial nebulae -->
     <linearGradient id="voidGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#030712"/>
       <stop offset="25%" stop-color="#090d24"/>
@@ -94,7 +94,7 @@
   <rect width="1200" height="440" rx="20" fill="url(#nebulaCyan)"/>
   <circle cx="600" cy="145" r="220" fill="url(#coreGlow)"/>
 
-  <!-- Graph AST Neural Mesh (Interactive & Flowing Topology) -->
+  <!-- Graph AST Neural Mesh (Interactive &amp; Flowing Topology) -->
   <g class="orbit-line" stroke="url(#wireGrad)" stroke-width="1.6" fill="none" opacity="0.6">
     <!-- Center to peripheral neural nodes -->
     <path d="M 600 145 L 360 85"/>
@@ -112,7 +112,7 @@
   </g>
 
   <!-- AST Graph Nodes -->
-  <!-- Left Side: AI Ingestion & Universal Drivers -->
+  <!-- Left Side: AI Ingestion &amp; Universal Drivers -->
   <g filter="url(#softGlow)">
     <circle cx="360" cy="85" r="6" fill="#38BDF8" class="node-pulse"/>
     <text x="360" y="65" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="700" fill="#7DD3FC">claude / codex</text>
@@ -124,7 +124,7 @@
     <text x="420" y="245" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="700" fill="#6EE7B7">antigravity / sllm</text>
   </g>
 
-  <!-- Right Side: Transpilation Targets & Execution Runtimes -->
+  <!-- Right Side: Transpilation Targets &amp; Execution Runtimes -->
   <g filter="url(#softGlow)">
     <circle cx="840" cy="85" r="6" fill="#F472B6" class="node-pulse" style="animation-delay: 0.5s;"/>
     <text x="840" y="65" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="700" fill="#F472B6">JVM · Java 21/25</text>
@@ -148,7 +148,7 @@
   </g>
   <text x="600" y="205" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="800" fill="#38BDF8" letter-spacing="2">KERNEL CORE</text>
 
-  <!-- Typography & Headers -->
+  <!-- Typography &amp; Headers -->
   <g text-anchor="middle">
     <!-- Tagline -->
     <text x="600" y="278" class="tagline">GRAPH-NATIVE · ZERO-BOILERPLATE · UNIVERSAL AI KERNEL</text>
