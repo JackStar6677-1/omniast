@@ -2,7 +2,7 @@
 """
 OmniAST / GraphLang Model Context Protocol (MCP) Server
 Allows any AI agent (Claude, Codex, Antigravity, DeepSeek, Grok) to natively
-query code graphs, transpile modules, and reason with 80%+ fewer tokens.
+query code graphs, transpile modules, compress context, and access persistent session memory.
 """
 
 import sys
@@ -10,9 +10,11 @@ import json
 import os
 from typing import Any, Dict
 
-# Import core kernel
+# Import core kernel and new capabilities
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from core.kernel.engine import OmniASTKernel
+from core.kernel.compression import ContextCompressor
+from core.kernel.session_memory import SessionMemoryStore
 from transpilers.java_transpiler import JavaTranspiler
 from transpilers.python_transpiler import PythonTranspiler
 from transpilers.rust_transpiler import RustTranspiler
@@ -27,6 +29,8 @@ kernel.register_transpiler("ts", TypeScriptTranspiler())
 wasm_t = WasmTranspiler()
 kernel.register_transpiler("wat", wasm_t)
 kernel.register_transpiler("wasm", wasm_t)
+
+memory_store = SessionMemoryStore()
 
 TOOLS = [
     {
@@ -63,6 +67,48 @@ TOOLS = [
         }
     },
     {
+        "name": "omniast_compress_context",
+        "description": "Compresses ASTs, JSON tool outputs, or logs by 60-90% before sending to LLM context (inspired by Headroom).",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "content_type": {
+                    "type": "string",
+                    "enum": ["ast_json", "logs"],
+                    "description": "Type of content to compress."
+                },
+                "data": {
+                    "type": "string",
+                    "description": "The raw JSON string or multiline log content."
+                }
+            },
+            "required": ["content_type", "data"]
+        }
+    },
+    {
+        "name": "omniast_memory",
+        "description": "Accesses or records cross-session architectural decisions and task history (claude-mem compatible).",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string",
+                    "enum": ["get_digest", "record_decision"],
+                    "description": "Action to perform."
+                },
+                "category": {
+                    "type": "string",
+                    "description": "Category for recording (ast_edit, architecture, user_preference, fix)."
+                },
+                "summary": {
+                    "type": "string",
+                    "description": "Summary of decision or lesson."
+                }
+            },
+            "required": ["action"]
+        }
+    },
+    {
         "name": "omniast_get_prompt",
         "description": "Returns the universal token-saver prompt for AI agents to adopt OmniAST methodology.",
         "inputSchema": {
@@ -92,6 +138,34 @@ def handle_call(name: str, args: Dict[str, Any]) -> Dict[str, Any]:
             "target": target,
             "emitted_code": emitted
         }
+    elif name == "omniast_compress_context":
+        ctype = args.get("content_type", "ast_json")
+        raw_data = args.get("data", "")
+        if ctype == "ast_json":
+            try:
+                parsed = json.loads(raw_data)
+                compressed = ContextCompressor.compress_ast_json(parsed)
+                comp_str = json.dumps(compressed)
+                savings = ContextCompressor.estimate_token_savings(raw_data, comp_str)
+                return {"ok": True, "compressed": compressed, "savings": savings}
+            except Exception as e:
+                return {"ok": False, "error": f"Invalid JSON for compression: {e}"}
+        else:
+            compressed_logs = ContextCompressor.compress_logs(raw_data)
+            savings = ContextCompressor.estimate_token_savings(raw_data, compressed_logs)
+            return {"ok": True, "compressed_logs": compressed_logs, "savings": savings}
+    elif name == "omniast_memory":
+        action = args.get("action", "get_digest")
+        if action == "get_digest":
+            digest = memory_store.format_memory_digest_for_llm(limit=10)
+            return {"ok": True, "memory_digest": digest}
+        elif action == "record_decision":
+            category = args.get("category", "architecture")
+            summary = args.get("summary", "")
+            if not summary:
+                return {"ok": False, "error": "Summary required to record decision"}
+            memory_store.record_decision(session_id="active_agent", category=category, summary=summary)
+            return {"ok": True, "recorded": True, "summary": summary}
     elif name == "omniast_get_prompt":
         prompt_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "prompts", "universal_agent_prompt.md")
         if os.path.exists(prompt_path):
@@ -120,7 +194,7 @@ def main():
                     "result": {
                         "protocolVersion": "2024-11-05",
                         "capabilities": {"tools": {}},
-                        "serverInfo": {"name": "omniast-mcp-kernel", "version": "0.1.0"}
+                        "serverInfo": {"name": "omniast-mcp-kernel", "version": "0.2.0"}
                     }
                 }
             elif method == "tools/list":
