@@ -25,3 +25,6 @@ dependencies = [
 
 [project.scripts]
 omniast = "core.kernel.engine:main"
+
+[tool.setuptools.packages.find]
+include = ["core*", "cli*", "runtime*", "mcp_server*", "transpilers*", "sre*"]
