@@ -11,7 +11,7 @@ When interacting with any codebase (Java, Python, Rust, TypeScript, Go):
 
 ---
 
-## 2. The 4 Golden Directives of OmniAST
+## 2. The 5 Golden Directives of OmniAST
 
 ### Directive 1: Graph-First Investigation (Zero-Token Exploration)
 Before executing search commands or reading entire source directories:
