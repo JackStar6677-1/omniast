@@ -9,9 +9,14 @@
 </p>
 
 <p align="center">
+  <a href="https://jackstar6677-1.github.io/omniast/"><img src="https://img.shields.io/badge/🌐_LIVE_DEMO-GitHub_Pages_Portal-8B5CF6?style=for-the-badge&logo=githubpages&logoColor=white" alt="Live Demo"></a>
+</p>
+
+<p align="center">
   <a href="#key-innovations"><img src="https://img.shields.io/badge/Architecture-Graph--Native-38BDF8?style=flat-square" alt="Graph Native"></a>
   <a href="#token-efficiency"><img src="https://img.shields.io/badge/LLM_Efficiency-85%25_Token_Reduction-818CF8?style=flat-square" alt="Token Saver"></a>
-  <a href="#supported-targets"><img src="https://img.shields.io/badge/Targets-Java_21+_·_Rust_·_Python_·_TS_·_WASM_·_OmniWeb_(GitHub_Pages)-F472B6?style=flat-square" alt="Multi Target"></a>
+  <a href="#mega-ui-design-system--pluggable-visual-themes"><img src="https://img.shields.io/badge/Mega--UI-v0.3.0_Active-EC4899?style=flat-square" alt="Mega UI"></a>
+  <a href="#supported-targets"><img src="https://img.shields.io/badge/Targets-Java_21+_·_Rust_Axum_·_Python_·_TS_·_WASM_·_OmniWeb-F472B6?style=flat-square" alt="Multi Target"></a>
   <a href="#tree-sitter-grammar"><img src="https://img.shields.io/badge/Tree--Sitter-Grammar_Ready-34D399?style=flat-square" alt="Tree Sitter"></a>
   <a href="#hermes--openclaw-skills-ecosystem"><img src="https://img.shields.io/badge/Ecosystem-Hermes_·_OpenClaw-A855F7?style=flat-square" alt="Hermes OpenClaw"></a>
   <a href="#license"><img src="https://img.shields.io/badge/License-MIT-FBBF24?style=flat-square" alt="MIT License"></a>
@@ -205,12 +210,63 @@ OmniAST features an ultra-modern, zero-dependency design system (`omni-ui.css`) 
 - **`terminal`:** Classic retro CRT monitor, phosphor green monochrome palette, monospace typography.
 - **`minimal`:** Stripe and VitePress inspired clean documentation theme with high-contrast neutral slate.
 
-#### ⚡ Mega-UI Capabilities:
-- **Animated RGB Border & Ambient Glow:** Compositor-accelerated gradient rotations via `@property --rgb-angle`.
-- **Scroll-Driven Animations:** Top RGB progress indicator bar synced via `animation-timeline: scroll()` and smooth viewport element reveals.
-- **Loaders & Skeletons:** Shimmer skeletons, Quantum rotating ring loaders, and SRE sonar radar sweeps.
-- **In-Browser Texture Studio:** Interactive 16x16 / 32x32 pixel canvas painter, procedural texture presets (Carbon Fiber, Cyber Grid, Honeycomb, Netherite), custom image uploader, and live 3D card preview.
-- **SVG Animation Engine:** Native support for vector graphics with `stroke-dashoffset` path drawing, pulsing glows, and live in-browser SVG code playground.
+#### 🌈 1. GPU-Accelerated Animated RGB Borders
+Bypasses JavaScript overhead by driving color rotations entirely on the compositor thread using modern CSS Houdini properties:
+```css
+@property --rgb-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes rgb-spin-border {
+  0% { --rgb-angle: 0deg; }
+  100% { --rgb-angle: 360deg; }
+}
+```
+Available via the `.rgb-card` and `.rgb-glow` utility classes.
+
+#### 📜 2. Scroll-Driven Progress Bar & Viewport Reveals
+- Top scroll progress bar (`#scroll-progress`) automatically tracks root document progress via `animation-timeline: scroll(root block)` with fallback for legacy browsers.
+- Viewport content cards reveal progressively as the user scrolls down with `.reveal-on-scroll`.
+
+#### ⏳ 3. Loaders, Quantum Pulses & Shimmer Skeletons
+- **Shimmer Skeletons:** Animated placeholder states (`.skeleton`, `.skeleton-text`, `.skeleton-title`, `.skeleton-card`) for asynchronous data fetching.
+- **Quantum Core Loader:** Triple counter-rotating rings with glowing radial gradients (`.loader-quantum`).
+- **SRE Sonar Radar:** Continuous 360° radar sweep with glowing sweep beam and target pulse blips (`.loader-radar`).
+
+#### 🎨 4. In-Browser Texture Studio
+Built directly into the web runtime with zero external dependencies:
+- **Interactive Pixel Painter:** 16x16 / 32x32 HTML5 Canvas editor with a 7-color sovereign palette, pencil, eraser, clear canvas, and one-click PNG download.
+- **Procedural Generators:** Instant generation of *Carbon Fiber*, *Cyber Grid*, *Hexagonal Honeycomb*, *CRT Scanlines*, and *Netherite Tile* patterns.
+- **Texture Uploader:** Drag-and-drop or select any image (PNG, JPG, WebP, SVG).
+- **Live 3D Card Preview:** Maps the generated or uploaded texture with seamless tiling across Glassmorphic UI surfaces.
+
+#### ⚡ 5. Animated & Static SVG Engine
+Native support for vector graphics with keyframe-driven path manipulation:
+- **Quantum Reactor Core:** Concentric spinning rings with gradient fills and ambient drop-shadow pulse.
+- **Sonar Radar Grid:** Vector circular axes with animated sweep beam and target indicators.
+- **Circuit Stream:** Neon circuit traces with infinite `stroke-dashoffset` flow animations.
+- **Live SVG Playground:** Paste raw `<svg>...</svg>` markup into the web UI for instant interactive rendering.
+
+---
+
+## 💻 Complete CLI Command Reference
+
+OmniAST provides a unified, ergonomic command-line interface for the entire development lifecycle:
+
+| Command | Arguments | Description |
+|---|---|---|
+| `omniast parse` | `-i <file.omni> [-o <out.json>] [-c]` | Parse `.omni` source into normalized AST JSON. Optional `-c` enables token compression. |
+| `omniast transpile` | `-i <file.omni> -t <target> [-o <out>]` | Transpile to JVM (`jvm`), Rust (`rust`), Python (`py`), TypeScript (`ts`), WASM (`wasm`/`wat`), or Web (`web`). |
+| `omniast web build` | `-i <file.omni> [-o docs/index.html] [--theme sovereign]` | Compile self-contained reactive SPA ready for GitHub Pages (<40KB runtime). |
+| `omniast web serve` | `-i <file.omni> [-p 8080] [--theme sovereign]` | Launch local HTTP preview server with live theme switcher and Texture Studio. |
+| `omniast web css` | `[-o dist/omni-ui.css]` | Export standalone Sovereign CSS design system (`omni-ui.css`). |
+| `omniast fullstack generate` | `-i <file.omni> [-o out_dir] [--theme sovereign]` | Generate complete Axum Rust backend (`Cargo.toml` + `main.rs`) and Reactive Web frontend. |
+| `omniast compress` | `-f <file> [--type ast\|logs]` | Compress AST or logs by 60-90% using Headroom context-saver engine. |
+| `omniast memory` | `[-d] [-r "decision"] [-c category]` | Inspect or record cross-session architectural decisions (claude-mem compatible). |
+| `omniast skills` | `[-f hermes\|openclaw]` | Export native tool schemas for NousResearch/hermes-agent and OpenClaw. |
+| `omniast accounts` | `[-p provider] [--json]` | Inspect and manage multi-account AI broker failover pools. |
+| `omniast export-agent` | `-f hermes\|openclaw\|saori\|mcp` | Export drop-in integration configurations for autonomous agent runtimes. |
 
 ---
 
@@ -375,6 +431,8 @@ omniast export-agent --framework mcp
 - [x] **Phase 4: Unified CLI & Test Suite** (`omniast` command-line interface, automated unit tests, GitHub Actions CI).
 - [x] **Phase 5: Tree-Sitter Grammar (`tree-sitter-omniast`)** (Formal grammar definition, syntax highlighting for VS Code & Neovim).
 - [x] **Phase 6: Self-Hosting Runtime** (Compiling OmniAST to native WebAssembly & standalone binaries).
+- [x] **Phase 7: Full-Stack Axum Engine (v0.2.0)** (Unified declarative `.omni` spec emitting Axum Rust backends, Serde data models, and reactive SPAs).
+- [x] **Phase 8: Mega-UI Engine & Sovereign Portal (v0.3.0)** (Animated RGB borders via CSS Houdini, Scroll-driven progress bar, In-Browser Texture Studio with canvas pixel editor, SVG animation engine, and GitHub Pages master deployment).
 
 ---
 
