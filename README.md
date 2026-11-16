@@ -182,7 +182,10 @@ omniast web build -i examples/fullstack_cluster.omni -o docs/index.html --theme 
 # 2. Preview the reactive application locally with live theme switcher
 omniast web serve -i examples/fullstack_cluster.omni --port 8080
 
-# 3. Generate a complete Full-Stack Project (Axum Rust Backend + GitHub Pages Frontend)
+# 3. Export Standalone Sovereign CSS Design System
+omniast web css -o dist/omni-ui.css
+
+# 4. Generate a complete Full-Stack Project (Axum Rust Backend + GitHub Pages Frontend)
 omniast fullstack generate -i examples/fullstack_cluster.omni -o out_cluster --theme cyberpunk
 # Result:
 # out_cluster/
@@ -194,15 +197,20 @@ omniast fullstack generate -i examples/fullstack_cluster.omni -o out_cluster --t
 # └── README.md
 ```
 
-### 🎨 Pluggable Visual Themes
+### 🎨 Mega-UI Design System & Pluggable Visual Themes
 
-OmniAST features 4 built-in design themes inspired by state-of-the-art UI architectures:
+OmniAST features an ultra-modern, zero-dependency design system (`omni-ui.css`) with 4 built-in themes:
 - **`sovereign`:** Glassmorphism, Bento Grid layout, deep dark background, amethyst purple and cyan accents.
 - **`cyberpunk`:** High-contrast tactical dark slate, neon cyan and electric magenta glows, angular borders.
 - **`terminal`:** Classic retro CRT monitor, phosphor green monochrome palette, monospace typography.
 - **`minimal`:** Stripe and VitePress inspired clean documentation theme with high-contrast neutral slate.
 
-All themes support dynamic in-browser switching via CSS variables without reloading the page or requiring bundlers.
+#### ⚡ Mega-UI Capabilities:
+- **Animated RGB Border & Ambient Glow:** Compositor-accelerated gradient rotations via `@property --rgb-angle`.
+- **Scroll-Driven Animations:** Top RGB progress indicator bar synced via `animation-timeline: scroll()` and smooth viewport element reveals.
+- **Loaders & Skeletons:** Shimmer skeletons, Quantum rotating ring loaders, and SRE sonar radar sweeps.
+- **In-Browser Texture Studio:** Interactive 16x16 / 32x32 pixel canvas painter, procedural texture presets (Carbon Fiber, Cyber Grid, Honeycomb, Netherite), custom image uploader, and live 3D card preview.
+- **SVG Animation Engine:** Native support for vector graphics with `stroke-dashoffset` path drawing, pulsing glows, and live in-browser SVG code playground.
 
 ---
 

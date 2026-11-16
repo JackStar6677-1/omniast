@@ -1,0 +1,87 @@
+module OmniASTMasterShowcase {
+  version: "3.0.0"
+  target: [rust, web, jvm, ts, wasm]
+
+  page SovereignPortal path="/" {
+    title: "OmniAST · Sovereign Graph-Native Kernel & Mega-UI"
+    layout: "SovereignShell"
+    theme: "sovereign"
+    signal kernelStatus = "OPTIMAL_SOVEREIGN"
+    signal activeBrokers = 5
+    signal tokensSavedRatio = "85.4%"
+    signal clientOverheadKB = "3.8KB"
+    signal activeTheme = "sovereign"
+  }
+
+  model ASTGraphNode {
+    id: uuid primary_key
+    name: string index
+    type: string
+    memory_cost_tokens: int
+    children_count: int
+    checksum: string
+  }
+
+  model MultiAccountBroker {
+    id: uuid primary_key
+    provider: string index
+    active_account: string
+    failover_pool: string
+    tokens_saved_ratio: float
+  }
+
+  model SRESwarmSentinel {
+    id: uuid primary_key
+    name: string index
+    cluster_target: string
+    pulse_interval: string
+    suppression_window: string
+  }
+
+  model WebTextureArtifact {
+    id: uuid primary_key
+    name: string index
+    format: string
+    dimensions: string
+    procedural: bool
+  }
+
+  endpoint GET "/api/v1/ast/graph" {
+    guard actor.is_authenticated()
+    cache ttl=15s
+  }
+
+  endpoint POST "/api/v1/ai/broker/dispatch" {
+    guard actor.has_role("sre_lead") or actor.has_role("architect")
+    rate_limit max=100 window=60s
+  }
+
+  endpoint GET "/api/v1/textures/palette" {
+    guard public
+    cache ttl=3600s
+  }
+
+  endpoint POST "/api/v1/telemetry/heartbeat" {
+    guard system.is_healthy()
+  }
+
+  listener SecurityFirewall on traffic.ingress {
+    guard request.is_malicious() or request.is_ddos_probe()
+    priority: highest
+  }
+
+  sentinel FleetSupervisor on cluster.heartbeat {
+    interval: 10s
+    guard cluster.unhealthy_nodes > 0
+  }
+
+  machine QuantumASTSynthesizer {
+    capacity: 5000000J
+    rate: 25000J/s
+  }
+
+  machine ProceduralTextureEngine {
+    capacity: 1000000J
+    rate: 10000J/s
+  }
+}

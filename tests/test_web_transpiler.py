@@ -124,5 +124,30 @@ class TestWebTranspiler(unittest.TestCase):
         self.assertIn('data-theme="sovereign"', html)
         self.assertIn('id="foot-theme">SOVEREIGN<', html)
 
+    def test_omni_ui_css_export(self):
+        from transpilers.omni_css import get_omni_ui_css
+        css = get_omni_ui_css()
+        self.assertIn("#scroll-progress", css)
+        self.assertIn(".rgb-card", css)
+        self.assertIn(".skeleton", css)
+        self.assertIn(".loader-quantum", css)
+        self.assertIn("grow-scroll-progress", css)
+
+    def test_mega_ui_elements_in_spa(self):
+        code = """
+        module MegaUIApp {
+            page Main path="/" {
+                title: "Mega UI Test"
+            }
+        }
+        """
+        mod = self.kernel.parse_source(code)
+        html = self.kernel.transpile(mod, "web")
+        self.assertIn('id="scroll-progress"', html)
+        self.assertIn('class="hero-container', html)
+        self.assertIn('id="pixelCanvas"', html)
+        self.assertIn('Quantum Reactor Core', html)
+        self.assertIn('rgb-card', html)
+
 if __name__ == "__main__":
     unittest.main()

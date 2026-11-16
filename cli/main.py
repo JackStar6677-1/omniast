@@ -78,6 +78,9 @@ def main():
     web_serve.add_argument("--port", "-p", type=int, default=8080, help="Port to serve on (default: 8080)")
     web_serve.add_argument("--theme", choices=["sovereign", "cyberpunk", "terminal", "minimal"], default="sovereign", help="Theme (default: sovereign)")
 
+    web_css = web_sub.add_parser("css", help="Export standalone Sovereign CSS design system (omni-ui.css)")
+    web_css.add_argument("--output", "-o", default="dist/omni-ui.css", help="Destination path (default: dist/omni-ui.css)")
+
     # Command: fullstack (Rust Axum + Reactive Web SPA)
     fs_cmd = subparsers.add_parser("fullstack", help="Full-stack engine: generate Rust Axum backend + Reactive Web frontend")
     fs_sub = fs_cmd.add_subparsers(dest="fullstack_action", help="Fullstack actions")
@@ -158,8 +161,18 @@ def main():
 
     elif args.command == "web":
         if not hasattr(args, "web_action") or not args.web_action:
-            print("[ERROR] Please specify 'omniast web build' or 'omniast web serve'.", file=sys.stderr)
+            print("[ERROR] Please specify 'omniast web build', 'omniast web serve', or 'omniast web css'.", file=sys.stderr)
             sys.exit(1)
+
+        if args.web_action == "css":
+            from transpilers.omni_css import get_omni_ui_css
+            css_content = get_omni_ui_css()
+            out_path = args.output
+            os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
+            with open(out_path, "w", encoding="utf-8") as out:
+                out.write(css_content)
+            print(f"[OK] Sovereign CSS framework exported successfully: {out_path}")
+            return
 
         if not os.path.exists(args.input):
             print(f"[ERROR] Input file '{args.input}' does not exist.", file=sys.stderr)
