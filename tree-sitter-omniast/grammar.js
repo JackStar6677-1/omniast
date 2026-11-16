@@ -21,7 +21,11 @@ module.exports = grammar({
       $.sentinel_definition,
       $.machine_definition,
       $.pipeline_definition,
-      $.service_definition
+      $.service_definition,
+      $.page_definition,
+      $.component_definition,
+      $.model_definition,
+      $.endpoint_definition
     ),
 
     comment: $ => choice(
@@ -179,6 +183,33 @@ module.exports = grammar({
     service_definition: $ => seq(
       'service',
       field('name', $.identifier),
+      field('body', $.block)
+    ),
+
+    // Web & Full-Stack Primitives (OmniWeb)
+    page_definition: $ => seq(
+      'page',
+      field('name', $.identifier),
+      optional(seq('path', '=', field('path', $.string_literal))),
+      field('body', $.block)
+    ),
+
+    component_definition: $ => seq(
+      'component',
+      field('name', $.identifier),
+      field('body', $.block)
+    ),
+
+    model_definition: $ => seq(
+      'model',
+      field('name', $.identifier),
+      field('body', $.entity_body)
+    ),
+
+    endpoint_definition: $ => seq(
+      'endpoint',
+      field('method', choice('GET', 'POST', 'PUT', 'DELETE', 'PATCH')),
+      field('path', $.string_literal),
       field('body', $.block)
     ),
 

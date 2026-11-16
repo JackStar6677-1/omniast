@@ -119,18 +119,41 @@ class OmniASTKernel:
                 val = line.split(":", 1)[1].strip()
                 val = val.strip("[]").replace('"', "").replace("'", "")
                 targets = [t.strip() for t in val.split(",") if t.strip()]
-            elif line.startswith("listener ") or line.startswith("machine ") or line.startswith("sentinel "):
-                # Support: listener Name on event.name {
+            elif current_node is not None and line.startswith("signal "):
+                # Child signal inside page/component: signal count = 0
+                sig_parts = line.split("=", 1)
+                sig_name = sig_parts[0].replace("signal", "").strip()
+                sig_val = sig_parts[1].strip() if len(sig_parts) > 1 else "null"
+                child_sig = ASTNode(type="signal", name=sig_name, metadata={"initial": sig_val})
+                current_node.children.append(child_sig)
+            elif any(line.startswith(prefix + " ") for prefix in [
+                "listener", "machine", "sentinel", "page", "component", "model", "endpoint", "pipeline", "service", "signal", "action", "view"
+            ]):
                 parts = line.split()
                 node_type = parts[0]
-                node_name = parts[1].replace("{", "").strip()
+                node_name = parts[1].replace("{", "").strip() if len(parts) > 1 else "anonymous"
                 current_node = ASTNode(type=node_type, name=node_name)
                 
-                # Check for 'on <event>' syntax in listener declaration
+                # Check for 'on <event>' syntax in listener/sentinel declaration
                 if " on " in line:
                     after_on = line.split(" on ", 1)[1]
                     event_hook = after_on.split()[0].replace("{", "").strip()
                     current_node.metadata["event"] = event_hook
+
+                # Check for path="/route" or path: "/route"
+                if 'path=' in line or 'path:' in line:
+                    sep = 'path=' if 'path=' in line else 'path:'
+                    path_val = line.split(sep, 1)[1].split()[0].replace("{", "").strip().strip('"').strip("'")
+                    current_node.metadata["path"] = path_val
+
+                # Check for method in endpoint: endpoint GET "/api/x"
+                if node_type == "endpoint" and len(parts) >= 3:
+                    method_val = parts[1].upper()
+                    path_val = parts[2].replace("{", "").strip().strip('"').strip("'")
+                    clean_path_id = path_val.replace("/", "_").strip("_")
+                    current_node.name = f"{method_val.lower()}_{clean_path_id}" if clean_path_id else method_val.lower()
+                    current_node.metadata["method"] = method_val
+                    current_node.metadata["path"] = path_val
 
                 nodes.append(current_node)
             elif line == "}":
@@ -138,11 +161,26 @@ class OmniASTKernel:
             elif current_node is not None:
                 if line.startswith("guard "):
                     current_node.metadata["guard"] = line[6:].strip()
+                elif line.startswith("signal "):
+                    # signal count = 0
+                    sig_parts = line.split("=", 1)
+                    sig_name = sig_parts[0].replace("signal", "").strip()
+                    sig_val = sig_parts[1].strip() if len(sig_parts) > 1 else "null"
+                    child_sig = ASTNode(type="signal", name=sig_name, metadata={"initial": sig_val})
+                    current_node.children.append(child_sig)
+                elif line.startswith("route "):
+                    current_node.metadata["route"] = line[6:].strip()
+                elif line.startswith("layout "):
+                    current_node.metadata["layout"] = line[7:].strip().strip('"').strip("'")
                 elif ":" in line:
                     key, val = line.split(":", 1)
                     key = key.strip()
                     val = val.strip().strip('"').strip("'")
                     current_node.metadata[key] = val
+                else:
+                    # Generic statement or child element inside view / block
+                    child_node = ASTNode(type="element", name=line.replace("{", "").replace("}", "").strip())
+                    current_node.children.append(child_node)
 
         return OmniASTModule(name=module_name, version=version, targets=targets, nodes=nodes)
 

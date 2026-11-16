@@ -11,7 +11,7 @@
 <p align="center">
   <a href="#key-innovations"><img src="https://img.shields.io/badge/Architecture-Graph--Native-38BDF8?style=flat-square" alt="Graph Native"></a>
   <a href="#token-efficiency"><img src="https://img.shields.io/badge/LLM_Efficiency-85%25_Token_Reduction-818CF8?style=flat-square" alt="Token Saver"></a>
-  <a href="#supported-targets"><img src="https://img.shields.io/badge/Targets-Java_21+_·_Rust_·_Python_·_TS_·_WASM-F472B6?style=flat-square" alt="Multi Target"></a>
+  <a href="#supported-targets"><img src="https://img.shields.io/badge/Targets-Java_21+_·_Rust_·_Python_·_TS_·_WASM_·_OmniWeb_(GitHub_Pages)-F472B6?style=flat-square" alt="Multi Target"></a>
   <a href="#tree-sitter-grammar"><img src="https://img.shields.io/badge/Tree--Sitter-Grammar_Ready-34D399?style=flat-square" alt="Tree Sitter"></a>
   <a href="#hermes--openclaw-skills-ecosystem"><img src="https://img.shields.io/badge/Ecosystem-Hermes_·_OpenClaw-A855F7?style=flat-square" alt="Hermes OpenClaw"></a>
   <a href="#license"><img src="https://img.shields.io/badge/License-MIT-FBBF24?style=flat-square" alt="MIT License"></a>
@@ -29,7 +29,7 @@ Traditional programming languages (Java, C++, Rust, Python, Go) were engineered 
 1. **Direct AST & Graph Representation:** Code is authored, navigated, and represented directly as an **Executable Abstract Syntax Tree & Dependency Graph**.
 2. **Universal AI Interoperability:** Any AI agent or human can read, mutate, query, and verify complete architectures with minimal token cost.
 3. **Massive Codebase Scalability:** Operates natively across enterprise repositories with 100k+ files by loading localized topological subgraphs instead of bloating context windows with linear text.
-4. **Universal Multi-Target Compilation:** Write once in OmniAST; compile deterministically to **Java 21/25 (Paper/JVM)**, **Native Rust/Tokio (Panama FFI)**, **Asynchronous Python**, or **Standalone WebAssembly (WASM/WAT)**.
+4. **Universal Multi-Target Compilation:** Write once in OmniAST; compile deterministically to **Java 21/25 (Paper/JVM)**, **Native Rust/Tokio (Panama FFI & Axum Web)**, **Asynchronous Python**, **Standalone WebAssembly (WASM/WAT)**, or **OmniWeb Reactive SPAs ready for GitHub Pages**.
 
 > [!WARNING]
 > **Experimental State & Community/AI Pull Request Mandate:**  
@@ -147,7 +147,40 @@ module QuantumPowerGrid {
             }
         }
     }
+### 4. OmniWeb: Declarative Full-Stack Web & GitHub Pages Reactive SPA
+
+```omniast
+module OmniStudio {
+    version: "1.0.0"
+    target: [web, rust]
+
+    page PortalIndex path="/" {
+        title: "OmniStudio · Reactive Portal"
+        layout: "SovereignShell"
+        signal counter = 42
+        signal activeMode = "high-performance"
+    }
+
+    model AgentTask {
+        id: uuid primary_key
+        title: string
+        status: string
+        priority: int
+    }
+
+    endpoint GET "/api/v1/tasks" {
+        guard actor.is_authenticated()
+        cache ttl=15s
+    }
 }
+```
+
+```bash
+# 1. Compile directly into a self-contained, reactive SPA for GitHub Pages (<4KB overhead)
+omniast web build -i examples/omni_portal.omni -o docs/index.html
+
+# 2. Preview the reactive application locally
+omniast web serve -i examples/omni_portal.omni --port 8080
 ```
 
 ---

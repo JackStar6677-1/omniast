@@ -1,0 +1,50 @@
+module OmniStudio {
+  version: "1.0.0"
+  target: [web, rust, ts]
+
+  page PortalIndex path="/" {
+    title: "OmniStudio · Reactive Portal"
+    layout: "SovereignShell"
+    signal counter = 42
+    signal activeMode = "high-performance"
+  }
+
+  model TelemetryMetric {
+    id: uuid primary_key
+    name: string index
+    value: float
+    unit: string
+    timestamp: long
+  }
+
+  model AgentTask {
+    id: uuid primary_key
+    title: string
+    status: string
+    priority: int
+  }
+
+  endpoint GET "/api/v1/metrics" {
+    guard actor.has_role("agent") or actor.has_role("operator")
+    cache ttl=15s
+  }
+
+  endpoint POST "/api/v1/tasks" {
+    guard actor.is_authenticated()
+  }
+
+  listener ChatFilter on player.chat {
+    guard message.contains_hate_speech()
+    priority: highest
+  }
+
+  sentinel HealthSentinel on system.pulse {
+    interval: 30s
+    guard system.memory_free < 20%
+  }
+
+  machine QuantumCrafter {
+    capacity: 250000J
+    rate: 5000J/s
+  }
+}

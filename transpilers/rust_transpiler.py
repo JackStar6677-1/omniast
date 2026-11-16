@@ -90,6 +90,25 @@ class RustTranspiler:
                     "    }",
                     ""
                 ])
+            elif node.type == "endpoint":
+                method = node.metadata.get("method", "GET").lower()
+                path = node.metadata.get("path", "/api")
+                lines.extend([
+                    f"    /// Web API Endpoint: {method.upper()} {path}",
+                    f"    pub async fn handle_endpoint_{node.name.lower()}(&self) -> (axum::http::StatusCode, &'static str) {{",
+                    f"        info!(\"[{node.name}] Serving endpoint {method.upper()} {path}\");",
+                    "        (axum::http::StatusCode::OK, \"{\\\"status\\\": \\\"ok\\\"}\")",
+                    "    }",
+                    ""
+                ])
+            elif node.type == "model":
+                lines.extend([
+                    f"    // Data Model: {node.name}",
+                    f"    pub fn get_model_{node.name.lower()}_schema(&self) -> &'static str {{",
+                    f"        \"{node.name}\"",
+                    "    }",
+                    ""
+                ])
 
         lines.extend([
             "}",

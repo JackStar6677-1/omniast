@@ -20,6 +20,7 @@ from transpilers.python_transpiler import PythonTranspiler
 from transpilers.rust_transpiler import RustTranspiler
 from transpilers.typescript_transpiler import TypeScriptTranspiler
 from transpilers.wasm_transpiler import WasmTranspiler
+from transpilers.web_transpiler import WebTranspiler
 from core.skills.hermes_openclaw import HermesSkillRegistry
 from sre.models.multi_account_broker import MultiAccountBroker
 from integrations.universal_agent_adapter import UniversalAgentAdapter
@@ -33,6 +34,10 @@ def build_kernel() -> OmniASTKernel:
     wasm_t = WasmTranspiler()
     k.register_transpiler("wat", wasm_t)
     k.register_transpiler("wasm", wasm_t)
+    web_t = WebTranspiler()
+    k.register_transpiler("web", web_t)
+    k.register_transpiler("spa", web_t)
+    k.register_transpiler("gh-pages", web_t)
     return k
 
 def main():
@@ -53,11 +58,23 @@ def main():
     trans_cmd.add_argument("--input", "-i", required=True, help="Path to .omni source file")
     trans_cmd.add_argument(
         "--target", "-t",
-        choices=["jvm", "py", "rust", "ts", "wasm", "wat"],
+        choices=["jvm", "py", "rust", "ts", "wasm", "wat", "web", "spa", "gh-pages"],
         required=True,
-        help="Target platform (jvm, py, rust, ts, wasm, wat)"
+        help="Target platform (jvm, py, rust, ts, wasm, wat, web, spa, gh-pages)"
     )
     trans_cmd.add_argument("--output", "-o", help="Optional output file path")
+
+    # Command: web (OmniWeb & GitHub Pages)
+    web_cmd = subparsers.add_parser("web", help="OmniWeb engine: build or preview reactive SPA for GitHub Pages")
+    web_sub = web_cmd.add_subparsers(dest="web_action", help="Web actions")
+    
+    web_build = web_sub.add_parser("build", help="Compile .omni module to static reactive bundle (HTML/JS/CSS)")
+    web_build.add_argument("--input", "-i", required=True, help="Path to .omni file")
+    web_build.add_argument("--output", "-o", default="dist/index.html", help="Destination path (default: dist/index.html)")
+    
+    web_serve = web_sub.add_parser("serve", help="Preview compiled reactive web app on local HTTP server")
+    web_serve.add_argument("--input", "-i", required=True, help="Path to .omni file")
+    web_serve.add_argument("--port", "-p", type=int, default=8080, help="Port to serve on (default: 8080)")
 
     # Command: compress (Headroom integration)
     comp_cmd = subparsers.add_parser("compress", help="Compress JSON payloads or logs by 60-90%% (Headroom mode)")
@@ -128,6 +145,53 @@ def main():
             print(f"[OK] Transpiled ({args.target}) code saved to {args.output}")
         else:
             print(emitted)
+
+    elif args.command == "web":
+        if not hasattr(args, "web_action") or not args.web_action:
+            print("[ERROR] Please specify 'omniast web build' or 'omniast web serve'.", file=sys.stderr)
+            sys.exit(1)
+
+        if not os.path.exists(args.input):
+            print(f"[ERROR] Input file '{args.input}' does not exist.", file=sys.stderr)
+            sys.exit(1)
+
+        with open(args.input, "r", encoding="utf-8") as f:
+            code = f.read()
+        module = kernel.parse_source(code)
+        bundle_html = kernel.transpile(module, "web")
+
+        if args.web_action == "build":
+            out_path = args.output
+            os.makedirs(os.path.dirname(os.path.abspath(out_path)), exist_ok=True)
+            with open(out_path, "w", encoding="utf-8") as out:
+                out.write(bundle_html)
+            print(f"[OK] OmniWeb static reactive application compiled successfully:")
+            print(f"     -> {out_path} (Ready for GitHub Pages deployment)")
+
+        elif args.web_action == "serve":
+            import http.server
+            import socketserver
+            import tempfile
+
+            with tempfile.TemporaryDirectory() as tmpdir:
+                index_path = os.path.join(tmpdir, "index.html")
+                with open(index_path, "w", encoding="utf-8") as out:
+                    out.write(bundle_html)
+
+                class OmniHandler(http.server.SimpleHTTPRequestHandler):
+                    def __init__(self, *a, **kw):
+                        super().__init__(*a, directory=tmpdir, **kw)
+                    def log_message(self, format, *args):
+                        pass
+
+                port = args.port
+                print(f"[OMNIWEB DEV SERVER] Serving live app on http://localhost:{port}")
+                print(f"[OMNIWEB DEV SERVER] Press Ctrl+C to stop.")
+                with socketserver.TCPServer(("", port), OmniHandler) as httpd:
+                    try:
+                        httpd.serve_forever()
+                    except KeyboardInterrupt:
+                        print("\n[OMNIWEB DEV SERVER] Server stopped.")
 
     elif args.command == "compress":
         if not os.path.exists(args.file):
