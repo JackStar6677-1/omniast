@@ -184,7 +184,7 @@ class OmniASTKernel:
 
         return OmniASTModule(name=module_name, version=version, targets=targets, nodes=nodes)
 
-    def transpile(self, module: OmniASTModule, target: str) -> str:
+    def transpile(self, module: OmniASTModule, target: str, **kwargs) -> str:
         target = target.lower().strip()
         if target not in self.transpilers:
             # Check target aliases (e.g. wasm -> wat if wat is registered)
@@ -194,4 +194,10 @@ class OmniASTKernel:
                 target = "wasm"
             else:
                 raise ValueError(f"Target '{target}' is not registered in OmniAST Kernel.")
-        return self.transpilers[target].emit(module)
+        transpiler = self.transpilers[target]
+        if kwargs:
+            try:
+                return transpiler.emit(module, **kwargs)
+            except TypeError:
+                pass
+        return transpiler.emit(module)

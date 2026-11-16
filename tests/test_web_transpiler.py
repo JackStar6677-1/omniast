@@ -92,6 +92,37 @@ class TestWebTranspiler(unittest.TestCase):
         rust = self.kernel.transpile(mod, "rust")
         self.assertIn("handle_endpoint_get_api_health", rust)
         self.assertIn("get_model_item_schema", rust)
+        self.assertIn("build_router", rust)
+        self.assertIn("pub struct Item", rust)
+
+    def test_themes_transpilation(self):
+        code = """
+        module ThemeApp {
+            page Home path="/" {
+                title: "Theme Test"
+            }
+        }
+        """
+        mod = self.kernel.parse_source(code)
+        themes = ["sovereign", "cyberpunk", "terminal", "minimal"]
+        for th in themes:
+            html = self.kernel.transpile(mod, "web", theme=th)
+            self.assertIn(f'data-theme="{th}"', html)
+            self.assertIn(f'id="foot-theme">{th.upper()}<', html)
+            self.assertIn("THEMES_DATA", html)
+
+    def test_theme_invalid_fallback(self):
+        code = """
+        module FallbackApp {
+            page Home path="/" {
+                title: "Fallback Test"
+            }
+        }
+        """
+        mod = self.kernel.parse_source(code)
+        html = self.kernel.transpile(mod, "web", theme="non_existent_theme_xyz")
+        self.assertIn('data-theme="sovereign"', html)
+        self.assertIn('id="foot-theme">SOVEREIGN<', html)
 
 if __name__ == "__main__":
     unittest.main()

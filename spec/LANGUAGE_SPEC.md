@@ -122,10 +122,60 @@ machine QuantumCapacitor : EnergyStorage {
 }
 ```
 
+### 3.6 Web Single-Page Applications & Reactive Pages
+Declares reactive, client-side views and state signals without JSX, Virtual DOM, or npm build steps:
+
+```omniast
+page ClusterMonitor path="/" {
+    title: "StarMesh · Sovereign Autonomous Cluster"
+    layout: "SovereignShell"
+    theme: "sovereign"
+    signal clusterHealth = "OPTIMAL"
+    signal activeNodes = 12
+    signal averageTPS = 20.0
+}
+```
+
+### 3.7 Data Models & REST Endpoints (Full-Stack)
+Declares strongly typed data schemas and HTTP REST endpoints for Axum and web consumers:
+
+```omniast
+model ServerNode {
+    id: uuid primary_key
+    hostname: string index
+    region: string
+    memory_rss: long
+    cpu_cores: int
+    status: string
+}
+
+endpoint GET "/api/v1/cluster/status" {
+    guard actor.has_role("sre_lead") or actor.has_role("architect")
+    cache ttl=5s
+}
+
+endpoint POST "/api/v1/cluster/drain" {
+    guard actor.has_role("root_operator")
+    rate_limit max=3 window=60s
+}
+```
+
 ---
 
 ## 4. Transpiler Backends
 
 1. **JVM Backend (`emit-jvm`):** Generates compliant Java 21+ code targeting Paper/Purpur APIs, avoiding reflection and compiling direct calls.
-2. **Rust Backend (`emit-rust`):** Emits zero-cost abstractions, safe multithreading via Tokio, and Foreign Function Interface (FFI) bindings for Java via Project Panama.
+2. **Rust Backend (`emit-rust`):** Emits zero-cost abstractions, safe multithreading via Tokio, Axum REST routing (`build_router()`), Serde model serialization, and Panama FFI bindings for Java.
 3. **Python Backend (`emit-py`):** Generates asynchronous `asyncio` services for system management, monitoring, and Discord/Telegram bots.
+4. **OmniWeb Backend (`emit-web` / `emit-spa` / `emit-gh-pages`):** Generates single-file reactive SPAs embedding the Micro-Signals reactive store (<2KB), in-browser theme switcher, metrics bento grid, dynamic data table with filtering, and AST playground. 100% zero-dependency, static CDN and GitHub Pages ready.
+5. **WASM / WAT Backend (`emit-wasm` / `emit-wat`):** Compiles high-speed execution routines into WebAssembly text and binary formats for edge runtimes and browsers.
+
+---
+
+## 5. Pluggable UI Design Themes
+
+OmniAST features 4 built-in, production-grade visual themes:
+* **`sovereign`:** Glassmorphism, Bento Grid layout, deep dark background, amethyst purple and cyan accents.
+* **`cyberpunk`:** High-contrast tactical dark slate, neon cyan and electric magenta glows, angular borders.
+* **`terminal`:** Classic retro CRT monitor, phosphor green monochrome palette, monospace typography.
+* **`minimal`:** Stripe and VitePress inspired clean documentation theme with high-contrast neutral slate.

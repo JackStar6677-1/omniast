@@ -1,22 +1,23 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="dark">
+<html lang="es" data-theme="sovereign">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OmniStudio · Reactive Portal · Powered by OmniAST</title>
+  <title>StarMesh · Sovereign Autonomous Cluster · Powered by OmniAST</title>
   <meta name="description" content="High-performance declarative web application compiled natively from OmniAST specification.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   
-  <style>
+  <style id="theme-styles">
     :root {
+      
       --bg-base: #090d16;
       --bg-surface: #0f172a;
       --bg-card: rgba(30, 41, 59, 0.7);
       --bg-card-hover: rgba(51, 65, 85, 0.8);
       --border-color: rgba(255, 255, 255, 0.08);
-      --border-accent: rgba(99, 102, 241, 0.3);
+      --border-accent: rgba(99, 102, 241, 0.35);
       --primary: #6366f1;
       --primary-glow: rgba(99, 102, 241, 0.25);
       --accent: #38bdf8;
@@ -27,11 +28,13 @@
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --text-dim: #64748b;
-      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
       --radius-sm: 8px;
       --radius-md: 14px;
       --radius-lg: 20px;
+      --body-bg: radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.12) 0%, transparent 40%), radial-gradient(circle at 85% 85%, rgba(56, 189, 248, 0.08) 0%, transparent 45%), #090d16;
+        
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
       --shadow-glow: 0 0 35px -5px var(--primary-glow);
     }
 
@@ -42,15 +45,14 @@
     }
 
     body {
+      background: var(--body-bg, #090d16);
       background-color: var(--bg-base);
       color: var(--text-main);
       font-family: var(--font-sans);
       line-height: 1.5;
       min-height: 100vh;
       overflow-x: hidden;
-      background-image: 
-        radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
-        radial-gradient(circle at 85% 85%, rgba(56, 189, 248, 0.08) 0%, transparent 45%);
+      transition: background 0.3s ease, color 0.3s ease;
     }
 
     .app-container {
@@ -70,6 +72,8 @@
       border-radius: var(--radius-md);
       margin-bottom: 28px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      flex-wrap: wrap;
+      gap: 16px;
     }
 
     .brand {
@@ -82,7 +86,7 @@
       width: 42px;
       height: 42px;
       background: linear-gradient(135deg, var(--primary), var(--accent));
-      border-radius: 10px;
+      border-radius: var(--radius-sm);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -111,6 +115,28 @@
       text-transform: uppercase;
     }
 
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .theme-select {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      outline: none;
+    }
+
+    .theme-select:focus {
+      border-color: var(--primary);
+    }
+
     .nav-tabs {
       display: flex;
       gap: 8px;
@@ -127,7 +153,7 @@
       padding: 8px 16px;
       font-size: 0.875rem;
       font-weight: 600;
-      border-radius: 6px;
+      border-radius: var(--radius-sm);
       cursor: pointer;
       transition: all 0.2s ease;
       font-family: var(--font-sans);
@@ -384,7 +410,7 @@
     }
 
     .btn:hover {
-      background: #4f46e5;
+      opacity: 0.9;
       box-shadow: 0 0 15px var(--primary-glow);
     }
 
@@ -407,6 +433,8 @@
       align-items: center;
       color: var(--text-dim);
       font-size: 0.8rem;
+      flex-wrap: wrap;
+      gap: 12px;
     }
 
     footer a {
@@ -425,16 +453,26 @@
       <div class="brand">
         <div class="brand-logo">Ω</div>
         <div class="brand-info">
-          <h1>OmniStudio · Reactive Portal <span class="badge-runtime">OmniWeb · GitHub Pages Ready</span></h1>
-          <p style="font-size: 0.8rem; color: var(--text-muted);">Declarative Reactive Engine for Autonomous AI & High Performance</p>
+          <h1>StarMesh · Sovereign Autonomous Cluster <span class="badge-runtime">OmniWeb · GitHub Pages Ready</span></h1>
+          <p style="font-size: 0.8rem; color: var(--text-muted);">Full-Stack & Pluggable UI Engine for Autonomous AI Systems</p>
         </div>
       </div>
       
-      <nav class="nav-tabs">
-        <button class="nav-btn active" onclick="setTab('dashboard')">📊 Dashboard</button>
-        <button class="nav-btn" onclick="setTab('playground')">⚡ AST Playground</button>
-        <button class="nav-btn" onclick="setTab('architecture')">🏛️ Arquitectura</button>
-      </nav>
+      <div class="header-actions">
+        <!-- Live Theme Switcher -->
+        <select class="theme-select" id="theme-switcher" onchange="switchTheme(this.value)">
+          <option value="sovereign" selected>🎨 Sovereign Glass</option>
+          <option value="cyberpunk" >⚡ Cyberpunk Neon</option>
+          <option value="terminal" >💻 Retro Terminal</option>
+          <option value="minimal" >📄 Minimal Doc</option>
+        </select>
+
+        <nav class="nav-tabs">
+          <button class="nav-btn active" onclick="setTab('dashboard')">📊 Dashboard</button>
+          <button class="nav-btn" onclick="setTab('playground')">⚡ AST Playground</button>
+          <button class="nav-btn" onclick="setTab('architecture')">🏛️ Arquitectura</button>
+        </nav>
+      </div>
     </header>
 
     <section class="metrics-grid">
@@ -444,7 +482,7 @@
       </div>
       <div class="metric-card">
         <div class="metric-label">Active Modules Loaded</div>
-        <div class="metric-val" id="metric-nodes">8 <span class="metric-sub" style="color: var(--accent);">Omni Nodes</span></div>
+        <div class="metric-val" id="metric-nodes">10 <span class="metric-sub" style="color: var(--accent);">Omni Nodes</span></div>
       </div>
       <div class="metric-card">
         <div class="metric-label">Client Runtime Overhead</div>
@@ -461,7 +499,7 @@
         <div class="card bento-8">
           <div class="card-header">
             <h2 class="card-title">🧩 Nodos Declarativos Compilados en el Módulo</h2>
-            <span class="pill pill-primary">OmniStudio (v1.0.0)</span>
+            <span class="pill pill-primary">StarMeshCluster (v2.0.0)</span>
           </div>
 
           <div class="filter-bar">
@@ -513,6 +551,10 @@
             <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
               <span style="color: var(--accent);">filterType:</span>
               <span id="sig-filterType" style="color: var(--text-main);">"all"</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <span style="color: var(--accent);">activeTheme:</span>
+              <span id="sig-theme" style="color: var(--text-main);">"sovereign"</span>
             </div>
             <div style="display: flex; justify-content: space-between;">
               <span style="color: var(--accent);">interactiveCounter:</span>
@@ -577,6 +619,7 @@
           <ul style="font-size: 0.85rem; color: var(--text-main); margin-left: 20px; line-height: 1.8;">
             <li><strong>Cero Servidores:</strong> Aloja en cualquier CDN gratuita (GitHub Pages, Cloudflare Pages, S3).</li>
             <li><strong>Persistencia Local:</strong> Sincronización transparente con LocalStorage o SQLite en WebAssembly.</li>
+            <li><strong>Multi-Theme Pluggable:</strong> Alterna dinámicamente entre Sovereign, Cyberpunk, Retro Terminal y Minimal.</li>
             <li><strong>Velocidad Extrema:</strong> Cero pausas de Garbage Collection o hidratación DOM mismatch.</li>
           </ul>
         </div>
@@ -589,7 +632,7 @@
           <ul style="font-size: 0.85rem; color: var(--text-main); margin-left: 20px; line-height: 1.8;">
             <li><strong>Un Solo Archivo Declarativo:</strong> La IA diseña un portal entero en ~50 líneas de código.</li>
             <li><strong>AST First & Zero Hallucination:</strong> El linter valida rutas, modelos y señales antes de emitir.</li>
-            <li><strong>Multi-Target Simultáneo:</strong> Compila tanto al cliente web (GitHub Pages) como al backend nativo de alta concurrencia en Rust (Axum).</li>
+            <li><strong>Full-Stack Unificado:</strong> Compila tanto al cliente web (GitHub Pages) como al backend nativo de alta concurrencia en Rust (Axum + SQLite WAL).</li>
           </ul>
         </div>
       </div>
@@ -597,25 +640,41 @@
 
     <footer class="sovereign-foot">
       <div>
-        OmniAST Web Engine v0.1.0 · Conceived by <a href="https://github.com/JackStar6677-1" target="_blank">JackStar</a> & SRE Triad
+        OmniAST Full-Stack & Web Engine v0.2.0 · Conceived by <a href="https://github.com/JackStar6677-1" target="_blank">JackStar</a> & SRE Triad
       </div>
       <div>
-        Target: <strong>GitHub Pages Reactive SPA</strong> · 100% Client-Side Reactive
+        Target: <strong>GitHub Pages Reactive SPA & Axum Backend</strong> · Theme: <strong id="foot-theme">SOVEREIGN</strong>
       </div>
     </footer>
   </div>
 
   <!-- Micro-Signals Reactive Engine (<2KB) -->
   <script>
-    const MODULE_DATA = {"name": "OmniStudio", "version": "1.0.0", "targets": ["web", "rust", "ts"], "nodes": [{"type": "page", "name": "PortalIndex", "metadata": {"path": "/", "title": "OmniStudio \u00b7 Reactive Portal", "layout": "SovereignShell"}, "children": [{"type": "signal", "name": "counter", "metadata": {"initial": "42"}, "children": []}, {"type": "signal", "name": "activeMode", "metadata": {"initial": "\"high-performance\""}, "children": []}]}, {"type": "model", "name": "TelemetryMetric", "metadata": {"id": "uuid primary_key", "name": "string index", "value": "float", "unit": "string", "timestamp": "long"}, "children": []}, {"type": "model", "name": "AgentTask", "metadata": {"id": "uuid primary_key", "title": "string", "status": "string", "priority": "int"}, "children": []}, {"type": "endpoint", "name": "get_api_v1_metrics", "metadata": {"method": "GET", "path": "/api/v1/metrics", "guard": "actor.has_role(\"agent\") or actor.has_role(\"operator\")"}, "children": [{"type": "element", "name": "cache ttl=15s", "metadata": {}, "children": []}]}, {"type": "endpoint", "name": "post_api_v1_tasks", "metadata": {"method": "POST", "path": "/api/v1/tasks", "guard": "actor.is_authenticated()"}, "children": []}, {"type": "listener", "name": "ChatFilter", "metadata": {"event": "player.chat", "guard": "message.contains_hate_speech()", "priority": "highest"}, "children": []}, {"type": "sentinel", "name": "HealthSentinel", "metadata": {"event": "system.pulse", "interval": "30s", "guard": "system.memory_free < 20%"}, "children": []}, {"type": "machine", "name": "QuantumCrafter", "metadata": {"capacity": "250000J", "rate": "5000J/s"}, "children": []}]};
+    const MODULE_DATA = {"name": "StarMeshCluster", "version": "2.0.0", "targets": ["rust", "web", "ts"], "nodes": [{"type": "page", "name": "ClusterMonitor", "metadata": {"path": "/", "title": "StarMesh \u00b7 Sovereign Autonomous Cluster", "layout": "SovereignShell", "theme": "sovereign"}, "children": [{"type": "signal", "name": "clusterHealth", "metadata": {"initial": "\"OPTIMAL\""}, "children": []}, {"type": "signal", "name": "activeNodes", "metadata": {"initial": "12"}, "children": []}, {"type": "signal", "name": "averageTPS", "metadata": {"initial": "20.0"}, "children": []}]}, {"type": "model", "name": "ServerNode", "metadata": {"id": "uuid primary_key", "hostname": "string index", "region": "string", "memory_rss": "long", "cpu_cores": "int", "status": "string"}, "children": []}, {"type": "model", "name": "IncidentReport", "metadata": {"id": "uuid primary_key", "severity": "string", "summary": "string", "service": "string", "timestamp": "long"}, "children": []}, {"type": "model", "name": "AgentPolicy", "metadata": {"id": "uuid primary_key", "agent_id": "string", "max_tokens_budget": "int", "allowed_tools": "string"}, "children": []}, {"type": "endpoint", "name": "get_api_v1_cluster_status", "metadata": {"method": "GET", "path": "/api/v1/cluster/status", "guard": "actor.has_role(\"sre_lead\") or actor.has_role(\"architect\")"}, "children": [{"type": "element", "name": "cache ttl=5s", "metadata": {}, "children": []}]}, {"type": "endpoint", "name": "post_api_v1_cluster_drain", "metadata": {"method": "POST", "path": "/api/v1/cluster/drain", "guard": "actor.has_role(\"root_operator\")"}, "children": [{"type": "element", "name": "rate_limit max=3 window=60s", "metadata": {}, "children": []}]}, {"type": "endpoint", "name": "get_api_v1_incidents", "metadata": {"method": "GET", "path": "/api/v1/incidents", "guard": "actor.is_authenticated()"}, "children": []}, {"type": "listener", "name": "IncidentAlert", "metadata": {"event": "alert.firing", "guard": "alert.severity == \"CRITICAL\"", "priority": "highest"}, "children": []}, {"type": "sentinel", "name": "FailoverSupervisor", "metadata": {"event": "node.heartbeat", "interval": "10s", "guard": "node.missed_pulses > 2"}, "children": []}, {"type": "machine", "name": "DistributedLockManager", "metadata": {"capacity": "1000000J", "rate": "10000J/s"}, "children": []}]};
+    const THEMES_DATA = {"sovereign": {"name": "Sovereign Glass", "description": "Star & Nova signature Glassmorphism with Bento Grid, radial glows, and amethyst accents.", "vars": "\n      --bg-base: #090d16;\n      --bg-surface: #0f172a;\n      --bg-card: rgba(30, 41, 59, 0.7);\n      --bg-card-hover: rgba(51, 65, 85, 0.8);\n      --border-color: rgba(255, 255, 255, 0.08);\n      --border-accent: rgba(99, 102, 241, 0.35);\n      --primary: #6366f1;\n      --primary-glow: rgba(99, 102, 241, 0.25);\n      --accent: #38bdf8;\n      --accent-purple: #a855f7;\n      --success: #10b981;\n      --warning: #f59e0b;\n      --danger: #ef4444;\n      --text-main: #f8fafc;\n      --text-muted: #94a3b8;\n      --text-dim: #64748b;\n      --radius-sm: 8px;\n      --radius-md: 14px;\n      --radius-lg: 20px;\n      --body-bg: radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.12) 0%, transparent 40%), radial-gradient(circle at 85% 85%, rgba(56, 189, 248, 0.08) 0%, transparent 45%), #090d16;\n        "}, "cyberpunk": {"name": "Cyberpunk Neon", "description": "High-contrast tactical hacker interface with electric cyan, neon magenta, and dark slate.", "vars": "\n      --bg-base: #05070e;\n      --bg-surface: #0a0f1d;\n      --bg-card: rgba(10, 18, 38, 0.85);\n      --bg-card-hover: rgba(16, 28, 60, 0.95);\n      --border-color: rgba(0, 240, 255, 0.2);\n      --border-accent: #00f0ff;\n      --primary: #00f0ff;\n      --primary-glow: rgba(0, 240, 255, 0.4);\n      --accent: #ff007f;\n      --accent-purple: #9d00ff;\n      --success: #00ff66;\n      --warning: #ffe600;\n      --danger: #ff003c;\n      --text-main: #e0faff;\n      --text-muted: #7ca5b8;\n      --text-dim: #446577;\n      --radius-sm: 4px;\n      --radius-md: 6px;\n      --radius-lg: 10px;\n      --body-bg: linear-gradient(180deg, #05070e 0%, #080d1a 100%);\n        "}, "terminal": {"name": "Retro Terminal", "description": "Phosphor green CRT terminal with scanline accents and strict monospace typography.", "vars": "\n      --bg-base: #0a0d0a;\n      --bg-surface: #101610;\n      --bg-card: #131a13;\n      --bg-card-hover: #192419;\n      --border-color: #1e331e;\n      --border-accent: #22c55e;\n      --primary: #22c55e;\n      --primary-glow: rgba(34, 197, 94, 0.3);\n      --accent: #4ade80;\n      --accent-purple: #86efac;\n      --success: #22c55e;\n      --warning: #facc15;\n      --danger: #f87171;\n      --text-main: #f0fdf4;\n      --text-muted: #86efac;\n      --text-dim: #3f6248;\n      --radius-sm: 0px;\n      --radius-md: 2px;\n      --radius-lg: 4px;\n      --body-bg: #0a0d0a;\n        "}, "minimal": {"name": "Minimal Clean Doc", "description": "Crisp enterprise layout with soft borders, high legibility, and refined slate accents.", "vars": "\n      --bg-base: #0f172a;\n      --bg-surface: #1e293b;\n      --bg-card: #1e293b;\n      --bg-card-hover: #334155;\n      --border-color: rgba(255, 255, 255, 0.12);\n      --border-accent: #3b82f6;\n      --primary: #3b82f6;\n      --primary-glow: rgba(59, 130, 246, 0.2);\n      --accent: #60a5fa;\n      --accent-purple: #a855f7;\n      --success: #10b981;\n      --warning: #f59e0b;\n      --danger: #ef4444;\n      --text-main: #f8fafc;\n      --text-muted: #cbd5e1;\n      --text-dim: #64748b;\n      --radius-sm: 6px;\n      --radius-md: 10px;\n      --radius-lg: 14px;\n      --body-bg: #0f172a;\n        "}};
     
     const State = {
       activeTab: "dashboard",
       searchQuery: "",
       filterType: "all",
+      activeTheme: "sovereign",
       counter: 0,
       nodes: MODULE_DATA.nodes || []
     };
+
+    function switchTheme(themeKey) {
+      if (!THEMES_DATA[themeKey]) return;
+      State.activeTheme = themeKey;
+      document.documentElement.setAttribute('data-theme', themeKey);
+      const styleEl = document.getElementById('theme-styles');
+      if (styleEl) {
+        const themeVars = THEMES_DATA[themeKey].vars;
+        styleEl.innerHTML = `:root { ${themeVars} --font-sans: 'Inter', sans-serif; --font-mono: 'JetBrains Mono', monospace; }`;
+      }
+      const footTheme = document.getElementById('foot-theme');
+      if (footTheme) footTheme.textContent = themeKey.toUpperCase();
+      updateSignalInspector();
+    }
 
     function setTab(tabName) {
       State.activeTab = tabName;
@@ -674,6 +733,8 @@
       if (elSearch) elSearch.textContent = '"' + State.searchQuery + '"';
       const elFilter = document.getElementById('sig-filterType');
       if (elFilter) elFilter.textContent = '"' + State.filterType + '"';
+      const elTheme = document.getElementById('sig-theme');
+      if (elTheme) elTheme.textContent = '"' + State.activeTheme + '"';
       const elCounter = document.getElementById('sig-counter');
       if (elCounter) elCounter.textContent = State.counter;
     }

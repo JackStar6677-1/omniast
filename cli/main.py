@@ -71,10 +71,20 @@ def main():
     web_build = web_sub.add_parser("build", help="Compile .omni module to static reactive bundle (HTML/JS/CSS)")
     web_build.add_argument("--input", "-i", required=True, help="Path to .omni file")
     web_build.add_argument("--output", "-o", default="dist/index.html", help="Destination path (default: dist/index.html)")
+    web_build.add_argument("--theme", choices=["sovereign", "cyberpunk", "terminal", "minimal"], default="sovereign", help="Theme (default: sovereign)")
     
     web_serve = web_sub.add_parser("serve", help="Preview compiled reactive web app on local HTTP server")
     web_serve.add_argument("--input", "-i", required=True, help="Path to .omni file")
     web_serve.add_argument("--port", "-p", type=int, default=8080, help="Port to serve on (default: 8080)")
+    web_serve.add_argument("--theme", choices=["sovereign", "cyberpunk", "terminal", "minimal"], default="sovereign", help="Theme (default: sovereign)")
+
+    # Command: fullstack (Rust Axum + Reactive Web SPA)
+    fs_cmd = subparsers.add_parser("fullstack", help="Full-stack engine: generate Rust Axum backend + Reactive Web frontend")
+    fs_sub = fs_cmd.add_subparsers(dest="fullstack_action", help="Fullstack actions")
+    fs_gen = fs_sub.add_parser("generate", help="Generate full-stack application (Axum REST API + Reactive Web SPA)")
+    fs_gen.add_argument("--input", "-i", required=True, help="Path to .omni file")
+    fs_gen.add_argument("--output", "-o", default="out_fullstack", help="Destination directory (default: out_fullstack)")
+    fs_gen.add_argument("--theme", choices=["sovereign", "cyberpunk", "terminal", "minimal"], default="sovereign", help="Theme for frontend SPA")
 
     # Command: compress (Headroom integration)
     comp_cmd = subparsers.add_parser("compress", help="Compress JSON payloads or logs by 60-90%% (Headroom mode)")
@@ -158,7 +168,8 @@ def main():
         with open(args.input, "r", encoding="utf-8") as f:
             code = f.read()
         module = kernel.parse_source(code)
-        bundle_html = kernel.transpile(module, "web")
+        theme = getattr(args, "theme", "sovereign")
+        bundle_html = kernel.transpile(module, "web", theme=theme)
 
         if args.web_action == "build":
             out_path = args.output
@@ -166,7 +177,7 @@ def main():
             with open(out_path, "w", encoding="utf-8") as out:
                 out.write(bundle_html)
             print(f"[OK] OmniWeb static reactive application compiled successfully:")
-            print(f"     -> {out_path} (Ready for GitHub Pages deployment)")
+            print(f"     -> {out_path} (Theme: {theme} · Ready for GitHub Pages deployment)")
 
         elif args.web_action == "serve":
             import http.server
@@ -185,13 +196,95 @@ def main():
                         pass
 
                 port = args.port
-                print(f"[OMNIWEB DEV SERVER] Serving live app on http://localhost:{port}")
+                print(f"[OMNIWEB DEV SERVER] Serving live app on http://localhost:{port} (Theme: {theme})")
                 print(f"[OMNIWEB DEV SERVER] Press Ctrl+C to stop.")
                 with socketserver.TCPServer(("", port), OmniHandler) as httpd:
                     try:
                         httpd.serve_forever()
                     except KeyboardInterrupt:
                         print("\n[OMNIWEB DEV SERVER] Server stopped.")
+
+    elif args.command == "fullstack":
+        if not hasattr(args, "fullstack_action") or not args.fullstack_action:
+            print("[ERROR] Please specify 'omniast fullstack generate'.", file=sys.stderr)
+            sys.exit(1)
+
+        if not os.path.exists(args.input):
+            print(f"[ERROR] Input file '{args.input}' does not exist.", file=sys.stderr)
+            sys.exit(1)
+
+        with open(args.input, "r", encoding="utf-8") as f:
+            code = f.read()
+        module = kernel.parse_source(code)
+
+        out_dir = os.path.abspath(args.output)
+        backend_dir = os.path.join(out_dir, "backend", "src")
+        frontend_dir = os.path.join(out_dir, "frontend")
+        os.makedirs(backend_dir, exist_ok=True)
+        os.makedirs(frontend_dir, exist_ok=True)
+
+        # Generate Rust Axum backend
+        rust_code = kernel.transpile(module, "rust")
+        rust_main_path = os.path.join(backend_dir, "main.rs")
+        with open(rust_main_path, "w", encoding="utf-8") as f:
+            f.write(rust_code)
+
+        cargo_path = os.path.join(out_dir, "backend", "Cargo.toml")
+        clean_mod_name = module.name.lower().replace("-", "_")
+        cargo_toml = f"""[package]
+name = "{clean_mod_name}_backend"
+version = "{module.version}"
+edition = "2021"
+
+[dependencies]
+tokio = {{ version = "1.0", features = ["full"] }}
+axum = "0.7"
+serde = {{ version = "1.0", features = ["derive"] }}
+serde_json = "1.0"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+"""
+        with open(cargo_path, "w", encoding="utf-8") as f:
+            f.write(cargo_toml)
+
+        # Generate Reactive Web frontend
+        theme = getattr(args, "theme", "sovereign")
+        web_html = kernel.transpile(module, "web", theme=theme)
+        index_path = os.path.join(frontend_dir, "index.html")
+        with open(index_path, "w", encoding="utf-8") as f:
+            f.write(web_html)
+
+        # Generate Root README
+        readme_path = os.path.join(out_dir, "README.md")
+        readme_content = f"""# {module.name} — Full-Stack Sovereign Application
+Generated by **OmniAST v0.2.0** (The Universal Graph-Native Kernel).
+
+## 🏛️ Architecture Overview
+- **Backend:** High-performance asynchronous Rust server using [Axum](https://github.com/tokio-rs/axum) and Tokio.
+- **Frontend:** Zero-dependency, client-side reactive SPA with Micro-Signals (<2KB) ready for **GitHub Pages**.
+- **Theme:** `{theme}` (with dynamic in-browser theme switcher enabled).
+
+## 🚀 Quickstart
+
+### 1. Run the Backend API
+```bash
+cd backend
+cargo run
+```
+Server listens on `http://0.0.0.0:8080`.
+
+### 2. Run / Deploy the Frontend
+- **Local preview:** Open `frontend/index.html` directly in any web browser or serve with `omniast web serve -i <spec.omni>`.
+- **Deploy to GitHub Pages:** Push the contents of `frontend/` to your `gh-pages` branch or configure your repository to deploy from `/docs`.
+"""
+        with open(readme_path, "w", encoding="utf-8") as f:
+            f.write(readme_content)
+
+        print(f"[OK] Full-stack application '{module.name}' generated successfully at: {out_dir}")
+        print(f"     ├── backend/src/main.rs  (Axum REST API & models)")
+        print(f"     ├── backend/Cargo.toml   (Tokio / Axum / Serde toolchain)")
+        print(f"     ├── frontend/index.html  (Micro-Signals SPA · GitHub Pages ready · Theme: {theme})")
+        print(f"     └── README.md            (Full-stack quickstart guide)")
 
     elif args.command == "compress":
         if not os.path.exists(args.file):

@@ -1,37 +1,53 @@
 """
-OmniAST Web & Single-Page Application (SPA) Transpiler (v0.1.0)
+OmniAST Web & Single-Page Application (SPA) Transpiler (v0.2.0)
 Compiles OmniAST declarative graph modules into modern, high-performance,
 zero-dependency reactive web applications ideal for GitHub Pages or static edge hosts.
 
 Features:
+- Pluggable Themes: sovereign, cyberpunk, terminal, minimal (with live theme switcher)
 - Micro-Signals reactive store (<2KB inlined)
 - Interactive tabs, filters, search, and dynamic state without Virtual DOM
 - Inlined live AST playground & compiler emulator
-- Glassmorphism / Sovereign UI design system
+- Glassmorphism & Bento Grid layout options
 - 100% self-contained single HTML bundle ready for GitHub Pages
 """
 
 import json
 from typing import Dict, Any, List
 from core.kernel.engine import OmniASTModule, ASTNode
+from transpilers.themes import THEMES, get_theme_css
 
 class WebTranspiler:
-    def __init__(self):
-        pass
+    def __init__(self, default_theme: str = "sovereign"):
+        self.default_theme = default_theme
 
-    def emit(self, module: OmniASTModule) -> str:
-        return self.transpile(module)
+    def emit(self, module: OmniASTModule, **kwargs) -> str:
+        return self.transpile(module, **kwargs)
 
-    def transpile(self, module: OmniASTModule) -> str:
+    def transpile(self, module: OmniASTModule, theme: str = None) -> str:
+        selected_theme = (theme or self.default_theme).lower().strip()
+        if selected_theme not in THEMES:
+            selected_theme = "sovereign"
+
         pages = [n for n in module.nodes if n.type == 'page']
         components = [n for n in module.nodes if n.type == 'component']
         models = [n for n in module.nodes if n.type == 'model']
         endpoints = [n for n in module.nodes if n.type == 'endpoint']
 
+        # Check if module metadata specifies a theme
+        for n in module.nodes:
+            if "theme" in n.metadata:
+                t = n.metadata["theme"].lower().strip()
+                if t in THEMES:
+                    selected_theme = t
+
+        theme_vars = get_theme_css(selected_theme)
+
         initial_signals: Dict[str, Any] = {
             'activeTab': 'dashboard',
             'searchQuery': '',
             'activeCategory': 'all',
+            'activeTheme': selected_theme,
             'astInput': "module MyService {\n  target: [rust, web]\n\n  page Index path=\"/\" {\n    title: \"Live Demo\"\n  }\n}",
             'compilationTarget': 'web',
             'statusFilter': 'all',
@@ -55,9 +71,10 @@ class WebTranspiler:
             title = pages[0].metadata['title']
 
         module_json_escaped = json.dumps(module.to_dict())
+        themes_json_escaped = json.dumps(THEMES)
 
         html_template = f"""<!DOCTYPE html>
-<html lang="es" data-theme="dark">
+<html lang="es" data-theme="{selected_theme}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -67,29 +84,11 @@ class WebTranspiler:
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   
-  <style>
+  <style id="theme-styles">
     :root {{
-      --bg-base: #090d16;
-      --bg-surface: #0f172a;
-      --bg-card: rgba(30, 41, 59, 0.7);
-      --bg-card-hover: rgba(51, 65, 85, 0.8);
-      --border-color: rgba(255, 255, 255, 0.08);
-      --border-accent: rgba(99, 102, 241, 0.3);
-      --primary: #6366f1;
-      --primary-glow: rgba(99, 102, 241, 0.25);
-      --accent: #38bdf8;
-      --accent-purple: #a855f7;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --text-dim: #64748b;
+      {theme_vars}
       --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
-      --radius-sm: 8px;
-      --radius-md: 14px;
-      --radius-lg: 20px;
       --shadow-glow: 0 0 35px -5px var(--primary-glow);
     }}
 
@@ -100,15 +99,14 @@ class WebTranspiler:
     }}
 
     body {{
+      background: var(--body-bg, #090d16);
       background-color: var(--bg-base);
       color: var(--text-main);
       font-family: var(--font-sans);
       line-height: 1.5;
       min-height: 100vh;
       overflow-x: hidden;
-      background-image: 
-        radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
-        radial-gradient(circle at 85% 85%, rgba(56, 189, 248, 0.08) 0%, transparent 45%);
+      transition: background 0.3s ease, color 0.3s ease;
     }}
 
     .app-container {{
@@ -128,6 +126,8 @@ class WebTranspiler:
       border-radius: var(--radius-md);
       margin-bottom: 28px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      flex-wrap: wrap;
+      gap: 16px;
     }}
 
     .brand {{
@@ -140,7 +140,7 @@ class WebTranspiler:
       width: 42px;
       height: 42px;
       background: linear-gradient(135deg, var(--primary), var(--accent));
-      border-radius: 10px;
+      border-radius: var(--radius-sm);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -169,6 +169,28 @@ class WebTranspiler:
       text-transform: uppercase;
     }}
 
+    .header-actions {{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }}
+
+    .theme-select {{
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      outline: none;
+    }}
+
+    .theme-select:focus {{
+      border-color: var(--primary);
+    }}
+
     .nav-tabs {{
       display: flex;
       gap: 8px;
@@ -185,7 +207,7 @@ class WebTranspiler:
       padding: 8px 16px;
       font-size: 0.875rem;
       font-weight: 600;
-      border-radius: 6px;
+      border-radius: var(--radius-sm);
       cursor: pointer;
       transition: all 0.2s ease;
       font-family: var(--font-sans);
@@ -442,7 +464,7 @@ class WebTranspiler:
     }}
 
     .btn:hover {{
-      background: #4f46e5;
+      opacity: 0.9;
       box-shadow: 0 0 15px var(--primary-glow);
     }}
 
@@ -465,6 +487,8 @@ class WebTranspiler:
       align-items: center;
       color: var(--text-dim);
       font-size: 0.8rem;
+      flex-wrap: wrap;
+      gap: 12px;
     }}
 
     footer a {{
@@ -484,15 +508,25 @@ class WebTranspiler:
         <div class="brand-logo">Ω</div>
         <div class="brand-info">
           <h1>{title} <span class="badge-runtime">OmniWeb · GitHub Pages Ready</span></h1>
-          <p style="font-size: 0.8rem; color: var(--text-muted);">Declarative Reactive Engine for Autonomous AI & High Performance</p>
+          <p style="font-size: 0.8rem; color: var(--text-muted);">Full-Stack & Pluggable UI Engine for Autonomous AI Systems</p>
         </div>
       </div>
       
-      <nav class="nav-tabs">
-        <button class="nav-btn active" onclick="setTab('dashboard')">📊 Dashboard</button>
-        <button class="nav-btn" onclick="setTab('playground')">⚡ AST Playground</button>
-        <button class="nav-btn" onclick="setTab('architecture')">🏛️ Arquitectura</button>
-      </nav>
+      <div class="header-actions">
+        <!-- Live Theme Switcher -->
+        <select class="theme-select" id="theme-switcher" onchange="switchTheme(this.value)">
+          <option value="sovereign" {"selected" if selected_theme == "sovereign" else ""}>🎨 Sovereign Glass</option>
+          <option value="cyberpunk" {"selected" if selected_theme == "cyberpunk" else ""}>⚡ Cyberpunk Neon</option>
+          <option value="terminal" {"selected" if selected_theme == "terminal" else ""}>💻 Retro Terminal</option>
+          <option value="minimal" {"selected" if selected_theme == "minimal" else ""}>📄 Minimal Doc</option>
+        </select>
+
+        <nav class="nav-tabs">
+          <button class="nav-btn active" onclick="setTab('dashboard')">📊 Dashboard</button>
+          <button class="nav-btn" onclick="setTab('playground')">⚡ AST Playground</button>
+          <button class="nav-btn" onclick="setTab('architecture')">🏛️ Arquitectura</button>
+        </nav>
+      </div>
     </header>
 
     <section class="metrics-grid">
@@ -572,6 +606,10 @@ class WebTranspiler:
               <span style="color: var(--accent);">filterType:</span>
               <span id="sig-filterType" style="color: var(--text-main);">"all"</span>
             </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+              <span style="color: var(--accent);">activeTheme:</span>
+              <span id="sig-theme" style="color: var(--text-main);">"{selected_theme}"</span>
+            </div>
             <div style="display: flex; justify-content: space-between;">
               <span style="color: var(--accent);">interactiveCounter:</span>
               <span id="sig-counter" style="color: var(--success); font-weight: bold;">0</span>
@@ -629,6 +667,7 @@ class WebTranspiler:
           <ul style="font-size: 0.85rem; color: var(--text-main); margin-left: 20px; line-height: 1.8;">
             <li><strong>Cero Servidores:</strong> Aloja en cualquier CDN gratuita (GitHub Pages, Cloudflare Pages, S3).</li>
             <li><strong>Persistencia Local:</strong> Sincronización transparente con LocalStorage o SQLite en WebAssembly.</li>
+            <li><strong>Multi-Theme Pluggable:</strong> Alterna dinámicamente entre Sovereign, Cyberpunk, Retro Terminal y Minimal.</li>
             <li><strong>Velocidad Extrema:</strong> Cero pausas de Garbage Collection o hidratación DOM mismatch.</li>
           </ul>
         </div>
@@ -641,7 +680,7 @@ class WebTranspiler:
           <ul style="font-size: 0.85rem; color: var(--text-main); margin-left: 20px; line-height: 1.8;">
             <li><strong>Un Solo Archivo Declarativo:</strong> La IA diseña un portal entero en ~50 líneas de código.</li>
             <li><strong>AST First & Zero Hallucination:</strong> El linter valida rutas, modelos y señales antes de emitir.</li>
-            <li><strong>Multi-Target Simultáneo:</strong> Compila tanto al cliente web (GitHub Pages) como al backend nativo de alta concurrencia en Rust (Axum).</li>
+            <li><strong>Full-Stack Unificado:</strong> Compila tanto al cliente web (GitHub Pages) como al backend nativo de alta concurrencia en Rust (Axum + SQLite WAL).</li>
           </ul>
         </div>
       </div>
@@ -649,10 +688,10 @@ class WebTranspiler:
 
     <footer class="sovereign-foot">
       <div>
-        OmniAST Web Engine v0.1.0 · Conceived by <a href="https://github.com/JackStar6677-1" target="_blank">JackStar</a> & SRE Triad
+        OmniAST Full-Stack & Web Engine v0.2.0 · Conceived by <a href="https://github.com/JackStar6677-1" target="_blank">JackStar</a> & SRE Triad
       </div>
       <div>
-        Target: <strong>GitHub Pages Reactive SPA</strong> · 100% Client-Side Reactive
+        Target: <strong>GitHub Pages Reactive SPA & Axum Backend</strong> · Theme: <strong id="foot-theme">{selected_theme.upper()}</strong>
       </div>
     </footer>
   </div>
@@ -660,14 +699,30 @@ class WebTranspiler:
   <!-- Micro-Signals Reactive Engine (<2KB) -->
   <script>
     const MODULE_DATA = {module_json_escaped};
+    const THEMES_DATA = {themes_json_escaped};
     
     const State = {{
       activeTab: "dashboard",
       searchQuery: "",
       filterType: "all",
+      activeTheme: "{selected_theme}",
       counter: 0,
       nodes: MODULE_DATA.nodes || []
     }};
+
+    function switchTheme(themeKey) {{
+      if (!THEMES_DATA[themeKey]) return;
+      State.activeTheme = themeKey;
+      document.documentElement.setAttribute('data-theme', themeKey);
+      const styleEl = document.getElementById('theme-styles');
+      if (styleEl) {{
+        const themeVars = THEMES_DATA[themeKey].vars;
+        styleEl.innerHTML = `:root {{ ${{themeVars}} --font-sans: 'Inter', sans-serif; --font-mono: 'JetBrains Mono', monospace; }}`;
+      }}
+      const footTheme = document.getElementById('foot-theme');
+      if (footTheme) footTheme.textContent = themeKey.toUpperCase();
+      updateSignalInspector();
+    }}
 
     function setTab(tabName) {{
       State.activeTab = tabName;
@@ -726,6 +781,8 @@ class WebTranspiler:
       if (elSearch) elSearch.textContent = '"' + State.searchQuery + '"';
       const elFilter = document.getElementById('sig-filterType');
       if (elFilter) elFilter.textContent = '"' + State.filterType + '"';
+      const elTheme = document.getElementById('sig-theme');
+      if (elTheme) elTheme.textContent = '"' + State.activeTheme + '"';
       const elCounter = document.getElementById('sig-counter');
       if (elCounter) elCounter.textContent = State.counter;
     }}

@@ -176,12 +176,33 @@ module OmniStudio {
 ```
 
 ```bash
-# 1. Compile directly into a self-contained, reactive SPA for GitHub Pages (<4KB overhead)
-omniast web build -i examples/omni_portal.omni -o docs/index.html
+# 1. Compile directly into a self-contained, reactive SPA for GitHub Pages (<2KB Micro-Signals store)
+omniast web build -i examples/fullstack_cluster.omni -o docs/index.html --theme sovereign
 
-# 2. Preview the reactive application locally
-omniast web serve -i examples/omni_portal.omni --port 8080
+# 2. Preview the reactive application locally with live theme switcher
+omniast web serve -i examples/fullstack_cluster.omni --port 8080
+
+# 3. Generate a complete Full-Stack Project (Axum Rust Backend + GitHub Pages Frontend)
+omniast fullstack generate -i examples/fullstack_cluster.omni -o out_cluster --theme cyberpunk
+# Result:
+# out_cluster/
+# ├── backend/
+# │   ├── Cargo.toml          (Tokio, Axum, Serde)
+# │   └── src/main.rs         (Axum router & handlers)
+# ├── frontend/
+# │   └── index.html          (Reactive SPA for GitHub Pages)
+# └── README.md
 ```
+
+### 🎨 Pluggable Visual Themes
+
+OmniAST features 4 built-in design themes inspired by state-of-the-art UI architectures:
+- **`sovereign`:** Glassmorphism, Bento Grid layout, deep dark background, amethyst purple and cyan accents.
+- **`cyberpunk`:** High-contrast tactical dark slate, neon cyan and electric magenta glows, angular borders.
+- **`terminal`:** Classic retro CRT monitor, phosphor green monochrome palette, monospace typography.
+- **`minimal`:** Stripe and VitePress inspired clean documentation theme with high-contrast neutral slate.
+
+All themes support dynamic in-browser switching via CSS variables without reloading the page or requiring bundlers.
 
 ---
 
