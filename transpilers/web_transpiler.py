@@ -20,6 +20,7 @@ from typing import Dict, Any, List
 from core.kernel.engine import OmniASTModule, ASTNode
 from transpilers.themes import THEMES, get_theme_css
 from transpilers.omni_css import get_omni_ui_css
+from transpilers.background_3d import get_3d_background_html
 
 class WebTranspiler:
     def __init__(self, default_theme: str = "sovereign"):
@@ -47,6 +48,7 @@ class WebTranspiler:
 
         theme_vars = get_theme_css(selected_theme)
         omni_ui_css = get_omni_ui_css()
+        background_3d_html = get_3d_background_html()
 
         initial_signals: Dict[str, Any] = {
             'activeTab': 'dashboard',
@@ -90,14 +92,16 @@ class WebTranspiler:
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   
-  <style id="theme-styles">
+  <style id="theme-vars">
     :root {{
       {theme_vars}
       --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
       --shadow-glow: 0 0 35px -5px var(--primary-glow);
     }}
+  </style>
 
+  <style id="main-styles">
     * {{
       box-sizing: border-box;
       margin: 0;
@@ -107,6 +111,7 @@ class WebTranspiler:
     body {{
       font-family: var(--font-sans);
       background-color: var(--bg);
+      background: var(--body-bg, #070913);
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
@@ -114,6 +119,18 @@ class WebTranspiler:
       overflow-x: hidden;
       line-height: 1.5;
       transition: background-color 0.3s ease, color 0.3s ease;
+      position: relative;
+    }}
+
+    #bg-canvas-3d {{
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.95;
     }}
 
     .app-container {{
@@ -124,6 +141,8 @@ class WebTranspiler:
       flex: 1;
       display: flex;
       flex-direction: column;
+      position: relative;
+      z-index: 1;
     }}
 
     /* Header */
@@ -540,6 +559,9 @@ class WebTranspiler:
   </style>
 </head>
 <body>
+  <!-- Sovereign 3D Cyber-Universe Background Canvas (Three.js & WebGL) -->
+  <canvas id="bg-canvas-3d"></canvas>
+
   <!-- Animated RGB Top Scroll Progress Bar -->
   <div id="scroll-progress"></div>
 
@@ -990,10 +1012,10 @@ class WebTranspiler:
       if (!THEMES_DATA[themeKey]) return;
       State.activeTheme = themeKey;
       document.documentElement.setAttribute('data-theme', themeKey);
-      const styleEl = document.getElementById('theme-styles');
+      const styleEl = document.getElementById('theme-vars');
       if (styleEl) {{
         const themeVars = THEMES_DATA[themeKey].vars;
-        styleEl.innerHTML = `:root {{ ${{themeVars}} --font-sans: 'Inter', sans-serif; --font-mono: 'JetBrains Mono', monospace; }}`;
+        styleEl.innerHTML = `:root {{ ${{themeVars}} --font-sans: 'Inter', sans-serif; --font-mono: 'JetBrains Mono', monospace; --shadow-glow: 0 0 35px -5px var(--primary-glow); }}`;
       }}
       const footTheme = document.getElementById('foot-theme');
       if (footTheme) footTheme.textContent = themeKey.toUpperCase();
@@ -1327,8 +1349,13 @@ class WebTranspiler:
       updateSignalInspector();
       applyPreset('carbon');
       renderCustomSvg(document.getElementById('customSvgInput').value);
+      if (window.initSovereign3DBackground) {{
+        window.initSovereign3DBackground();
+      }}
     }});
   </script>
+
+  {background_3d_html}
 </body>
 </html>"""
         return html_template

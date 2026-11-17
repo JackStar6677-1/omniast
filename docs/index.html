@@ -9,35 +9,42 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   
-  <style id="theme-styles">
+  <style id="theme-vars">
     :root {
       
-      --bg-base: #090d16;
+      --bg-base: #070913;
+      --bg: #070913;
+      --surface: rgba(15, 23, 42, 0.85);
+      --surface-hover: rgba(30, 41, 59, 0.92);
       --bg-surface: #0f172a;
-      --bg-card: rgba(30, 41, 59, 0.7);
-      --bg-card-hover: rgba(51, 65, 85, 0.8);
-      --border-color: rgba(255, 255, 255, 0.08);
-      --border-accent: rgba(99, 102, 241, 0.35);
+      --bg-card: rgba(15, 23, 42, 0.82);
+      --bg-card-hover: rgba(30, 41, 59, 0.92);
+      --card: rgba(15, 23, 42, 0.82);
+      --card-hover: rgba(30, 41, 59, 0.92);
+      --border-color: rgba(255, 255, 255, 0.12);
+      --border-accent: rgba(99, 102, 241, 0.45);
       --primary: #6366f1;
-      --primary-glow: rgba(99, 102, 241, 0.25);
+      --primary-glow: rgba(99, 102, 241, 0.35);
       --accent: #38bdf8;
       --accent-purple: #a855f7;
       --success: #10b981;
       --warning: #f59e0b;
       --danger: #ef4444;
       --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --text-dim: #64748b;
+      --text-muted: #cbd5e1;
+      --text-dim: #94a3b8;
       --radius-sm: 8px;
       --radius-md: 14px;
       --radius-lg: 20px;
-      --body-bg: radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.12) 0%, transparent 40%), radial-gradient(circle at 85% 85%, rgba(56, 189, 248, 0.08) 0%, transparent 45%), #090d16;
+      --body-bg: #070913;
         
       --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
       --shadow-glow: 0 0 35px -5px var(--primary-glow);
     }
+  </style>
 
+  <style id="main-styles">
     * {
       box-sizing: border-box;
       margin: 0;
@@ -47,6 +54,7 @@
     body {
       font-family: var(--font-sans);
       background-color: var(--bg);
+      background: var(--body-bg, #070913);
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
@@ -54,6 +62,18 @@
       overflow-x: hidden;
       line-height: 1.5;
       transition: background-color 0.3s ease, color 0.3s ease;
+      position: relative;
+    }
+
+    #bg-canvas-3d {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.95;
     }
 
     .app-container {
@@ -64,6 +84,8 @@
       flex: 1;
       display: flex;
       flex-direction: column;
+      position: relative;
+      z-index: 1;
     }
 
     /* Header */
@@ -702,16 +724,31 @@
   100% { transform: rotate(360deg); }
 }
 
+/* --- Sovereign 3D Cyber-Universe Background Canvas --- */
+#bg-canvas-3d {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.95;
+}
+
 /* --- Hero Section & Banner --- */
 .hero-container {
   position: relative;
-  padding: 60px 32px 48px;
+  padding: 60px 36px 48px;
   margin-bottom: 32px;
   border-radius: var(--radius-lg);
-  background: radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.15), transparent 60%),
-              radial-gradient(circle at 20% 80%, rgba(6, 182, 212, 0.12), transparent 50%),
+  background: radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.22), transparent 60%),
+              radial-gradient(circle at 20% 80%, rgba(6, 182, 212, 0.18), transparent 50%),
               var(--surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border-color);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -724,7 +761,7 @@
   right: 0;
   width: 50%;
   height: 100%;
-  opacity: 0.12;
+  opacity: 0.15;
   pointer-events: none;
   z-index: 0;
 }
@@ -741,13 +778,13 @@
   gap: 8px;
   padding: 6px 14px;
   border-radius: 9999px;
-  background: rgba(139, 92, 246, 0.15);
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  background: rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.4);
   font-size: 0.78rem;
   font-family: var(--font-mono);
   color: #c084fc;
   margin-bottom: 16px;
-  box-shadow: 0 0 12px rgba(139, 92, 246, 0.2);
+  box-shadow: 0 0 16px rgba(139, 92, 246, 0.3);
 }
 
 .hero-badge .pulse-dot {
@@ -765,14 +802,15 @@
 }
 
 .hero-title {
-  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-size: clamp(2.2rem, 4.5vw, 3.4rem);
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.15;
-  margin-bottom: 14px;
-  background: linear-gradient(135deg, var(--text-main) 30%, var(--primary) 70%, var(--accent) 100%);
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #ffffff 15%, #38bdf8 55%, #c084fc 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 14px rgba(56, 189, 248, 0.35));
 }
 
 .hero-subtitle {
@@ -780,6 +818,7 @@
   color: var(--text-muted);
   line-height: 1.6;
   margin-bottom: 24px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
 }
 
 .hero-actions {
@@ -804,17 +843,19 @@
 }
 
 .hero-stat-val {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.6rem;
+  font-weight: 800;
   font-family: var(--font-mono);
-  color: var(--text-main);
+  color: #ffffff;
+  text-shadow: 0 0 16px rgba(56, 189, 248, 0.45);
 }
 
 .hero-stat-lbl {
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   color: var(--text-dim);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
+  font-weight: 600;
 }
 
 /* --- SVG Animation Utilities --- */
@@ -945,6 +986,9 @@
   </style>
 </head>
 <body>
+  <!-- Sovereign 3D Cyber-Universe Background Canvas (Three.js & WebGL) -->
+  <canvas id="bg-canvas-3d"></canvas>
+
   <!-- Animated RGB Top Scroll Progress Bar -->
   <div id="scroll-progress"></div>
 
@@ -1382,7 +1426,7 @@
   <!-- Micro-Signals Reactive Engine (<2KB) & Texture Studio Runtime -->
   <script>
     const MODULE_DATA = {"name": "OmniASTMasterShowcase", "version": "3.0.0", "targets": ["rust", "web", "jvm", "ts", "wasm"], "nodes": [{"type": "page", "name": "SovereignPortal", "metadata": {"path": "/", "title": "OmniAST \u00b7 Sovereign Graph-Native Kernel & Mega-UI", "layout": "SovereignShell", "theme": "sovereign"}, "children": [{"type": "signal", "name": "kernelStatus", "metadata": {"initial": "\"OPTIMAL_SOVEREIGN\""}, "children": []}, {"type": "signal", "name": "activeBrokers", "metadata": {"initial": "5"}, "children": []}, {"type": "signal", "name": "tokensSavedRatio", "metadata": {"initial": "\"85.4%\""}, "children": []}, {"type": "signal", "name": "clientOverheadKB", "metadata": {"initial": "\"3.8KB\""}, "children": []}, {"type": "signal", "name": "activeTheme", "metadata": {"initial": "\"sovereign\""}, "children": []}]}, {"type": "model", "name": "ASTGraphNode", "metadata": {"id": "uuid primary_key", "name": "string index", "type": "string", "memory_cost_tokens": "int", "children_count": "int", "checksum": "string"}, "children": []}, {"type": "model", "name": "MultiAccountBroker", "metadata": {"id": "uuid primary_key", "provider": "string index", "active_account": "string", "failover_pool": "string", "tokens_saved_ratio": "float"}, "children": []}, {"type": "model", "name": "SRESwarmSentinel", "metadata": {"id": "uuid primary_key", "name": "string index", "cluster_target": "string", "pulse_interval": "string", "suppression_window": "string"}, "children": []}, {"type": "model", "name": "WebTextureArtifact", "metadata": {"id": "uuid primary_key", "name": "string index", "format": "string", "dimensions": "string", "procedural": "bool"}, "children": []}, {"type": "endpoint", "name": "get_api_v1_ast_graph", "metadata": {"method": "GET", "path": "/api/v1/ast/graph", "guard": "actor.is_authenticated()"}, "children": [{"type": "element", "name": "cache ttl=15s", "metadata": {}, "children": []}]}, {"type": "endpoint", "name": "post_api_v1_ai_broker_dispatch", "metadata": {"method": "POST", "path": "/api/v1/ai/broker/dispatch", "guard": "actor.has_role(\"sre_lead\") or actor.has_role(\"architect\")"}, "children": [{"type": "element", "name": "rate_limit max=100 window=60s", "metadata": {}, "children": []}]}, {"type": "endpoint", "name": "get_api_v1_textures_palette", "metadata": {"method": "GET", "path": "/api/v1/textures/palette", "guard": "public"}, "children": [{"type": "element", "name": "cache ttl=3600s", "metadata": {}, "children": []}]}, {"type": "endpoint", "name": "post_api_v1_telemetry_heartbeat", "metadata": {"method": "POST", "path": "/api/v1/telemetry/heartbeat", "guard": "system.is_healthy()"}, "children": []}, {"type": "listener", "name": "SecurityFirewall", "metadata": {"event": "traffic.ingress", "guard": "request.is_malicious() or request.is_ddos_probe()", "priority": "highest"}, "children": []}, {"type": "sentinel", "name": "FleetSupervisor", "metadata": {"event": "cluster.heartbeat", "interval": "10s", "guard": "cluster.unhealthy_nodes > 0"}, "children": []}, {"type": "machine", "name": "QuantumASTSynthesizer", "metadata": {"capacity": "5000000J", "rate": "25000J/s"}, "children": []}, {"type": "machine", "name": "ProceduralTextureEngine", "metadata": {"capacity": "1000000J", "rate": "10000J/s"}, "children": []}]};
-    const THEMES_DATA = {"sovereign": {"name": "Sovereign Glass", "description": "Star & Nova signature Glassmorphism with Bento Grid, radial glows, and amethyst accents.", "vars": "\n      --bg-base: #090d16;\n      --bg-surface: #0f172a;\n      --bg-card: rgba(30, 41, 59, 0.7);\n      --bg-card-hover: rgba(51, 65, 85, 0.8);\n      --border-color: rgba(255, 255, 255, 0.08);\n      --border-accent: rgba(99, 102, 241, 0.35);\n      --primary: #6366f1;\n      --primary-glow: rgba(99, 102, 241, 0.25);\n      --accent: #38bdf8;\n      --accent-purple: #a855f7;\n      --success: #10b981;\n      --warning: #f59e0b;\n      --danger: #ef4444;\n      --text-main: #f8fafc;\n      --text-muted: #94a3b8;\n      --text-dim: #64748b;\n      --radius-sm: 8px;\n      --radius-md: 14px;\n      --radius-lg: 20px;\n      --body-bg: radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.12) 0%, transparent 40%), radial-gradient(circle at 85% 85%, rgba(56, 189, 248, 0.08) 0%, transparent 45%), #090d16;\n        "}, "cyberpunk": {"name": "Cyberpunk Neon", "description": "High-contrast tactical hacker interface with electric cyan, neon magenta, and dark slate.", "vars": "\n      --bg-base: #05070e;\n      --bg-surface: #0a0f1d;\n      --bg-card: rgba(10, 18, 38, 0.85);\n      --bg-card-hover: rgba(16, 28, 60, 0.95);\n      --border-color: rgba(0, 240, 255, 0.2);\n      --border-accent: #00f0ff;\n      --primary: #00f0ff;\n      --primary-glow: rgba(0, 240, 255, 0.4);\n      --accent: #ff007f;\n      --accent-purple: #9d00ff;\n      --success: #00ff66;\n      --warning: #ffe600;\n      --danger: #ff003c;\n      --text-main: #e0faff;\n      --text-muted: #7ca5b8;\n      --text-dim: #446577;\n      --radius-sm: 4px;\n      --radius-md: 6px;\n      --radius-lg: 10px;\n      --body-bg: linear-gradient(180deg, #05070e 0%, #080d1a 100%);\n        "}, "terminal": {"name": "Retro Terminal", "description": "Phosphor green CRT terminal with scanline accents and strict monospace typography.", "vars": "\n      --bg-base: #0a0d0a;\n      --bg-surface: #101610;\n      --bg-card: #131a13;\n      --bg-card-hover: #192419;\n      --border-color: #1e331e;\n      --border-accent: #22c55e;\n      --primary: #22c55e;\n      --primary-glow: rgba(34, 197, 94, 0.3);\n      --accent: #4ade80;\n      --accent-purple: #86efac;\n      --success: #22c55e;\n      --warning: #facc15;\n      --danger: #f87171;\n      --text-main: #f0fdf4;\n      --text-muted: #86efac;\n      --text-dim: #3f6248;\n      --radius-sm: 0px;\n      --radius-md: 2px;\n      --radius-lg: 4px;\n      --body-bg: #0a0d0a;\n        "}, "minimal": {"name": "Minimal Clean Doc", "description": "Crisp enterprise layout with soft borders, high legibility, and refined slate accents.", "vars": "\n      --bg-base: #0f172a;\n      --bg-surface: #1e293b;\n      --bg-card: #1e293b;\n      --bg-card-hover: #334155;\n      --border-color: rgba(255, 255, 255, 0.12);\n      --border-accent: #3b82f6;\n      --primary: #3b82f6;\n      --primary-glow: rgba(59, 130, 246, 0.2);\n      --accent: #60a5fa;\n      --accent-purple: #a855f7;\n      --success: #10b981;\n      --warning: #f59e0b;\n      --danger: #ef4444;\n      --text-main: #f8fafc;\n      --text-muted: #cbd5e1;\n      --text-dim: #64748b;\n      --radius-sm: 6px;\n      --radius-md: 10px;\n      --radius-lg: 14px;\n      --body-bg: #0f172a;\n        "}};
+    const THEMES_DATA = {"sovereign": {"name": "Sovereign Glass", "description": "Star & Nova signature Glassmorphism with Bento Grid, radial glows, and amethyst accents.", "vars": "\n      --bg-base: #070913;\n      --bg: #070913;\n      --surface: rgba(15, 23, 42, 0.85);\n      --surface-hover: rgba(30, 41, 59, 0.92);\n      --bg-surface: #0f172a;\n      --bg-card: rgba(15, 23, 42, 0.82);\n      --bg-card-hover: rgba(30, 41, 59, 0.92);\n      --card: rgba(15, 23, 42, 0.82);\n      --card-hover: rgba(30, 41, 59, 0.92);\n      --border-color: rgba(255, 255, 255, 0.12);\n      --border-accent: rgba(99, 102, 241, 0.45);\n      --primary: #6366f1;\n      --primary-glow: rgba(99, 102, 241, 0.35);\n      --accent: #38bdf8;\n      --accent-purple: #a855f7;\n      --success: #10b981;\n      --warning: #f59e0b;\n      --danger: #ef4444;\n      --text-main: #f8fafc;\n      --text-muted: #cbd5e1;\n      --text-dim: #94a3b8;\n      --radius-sm: 8px;\n      --radius-md: 14px;\n      --radius-lg: 20px;\n      --body-bg: #070913;\n        "}, "cyberpunk": {"name": "Cyberpunk Neon", "description": "High-contrast tactical hacker interface with electric cyan, neon magenta, and dark slate.", "vars": "\n      --bg-base: #04060c;\n      --bg: #04060c;\n      --surface: rgba(10, 18, 38, 0.9);\n      --surface-hover: rgba(18, 32, 68, 0.96);\n      --bg-surface: #0a0f1d;\n      --bg-card: rgba(10, 18, 38, 0.88);\n      --bg-card-hover: rgba(18, 32, 68, 0.96);\n      --card: rgba(10, 18, 38, 0.88);\n      --card-hover: rgba(18, 32, 68, 0.96);\n      --border-color: rgba(0, 240, 255, 0.25);\n      --border-accent: #00f0ff;\n      --primary: #00f0ff;\n      --primary-glow: rgba(0, 240, 255, 0.45);\n      --accent: #ff007f;\n      --accent-purple: #9d00ff;\n      --success: #00ff66;\n      --warning: #ffe600;\n      --danger: #ff003c;\n      --text-main: #f0fdff;\n      --text-muted: #93c5fd;\n      --text-dim: #60a5fa;\n      --radius-sm: 4px;\n      --radius-md: 6px;\n      --radius-lg: 10px;\n      --body-bg: #04060c;\n        "}, "terminal": {"name": "Retro Terminal", "description": "Phosphor green CRT terminal with scanline accents and strict monospace typography.", "vars": "\n      --bg-base: #060906;\n      --bg: #060906;\n      --surface: rgba(16, 26, 16, 0.9);\n      --surface-hover: rgba(24, 38, 24, 0.96);\n      --bg-surface: #101610;\n      --bg-card: rgba(16, 26, 16, 0.88);\n      --bg-card-hover: rgba(24, 38, 24, 0.96);\n      --card: rgba(16, 26, 16, 0.88);\n      --card-hover: rgba(24, 38, 24, 0.96);\n      --border-color: rgba(34, 197, 94, 0.3);\n      --border-accent: #22c55e;\n      --primary: #22c55e;\n      --primary-glow: rgba(34, 197, 94, 0.4);\n      --accent: #4ade80;\n      --accent-purple: #86efac;\n      --success: #22c55e;\n      --warning: #facc15;\n      --danger: #f87171;\n      --text-main: #f0fdf4;\n      --text-muted: #86efac;\n      --text-dim: #4ade80;\n      --radius-sm: 0px;\n      --radius-md: 2px;\n      --radius-lg: 4px;\n      --body-bg: #060906;\n        "}, "minimal": {"name": "Minimal Clean Doc", "description": "Crisp enterprise layout with soft borders, high legibility, and refined slate accents.", "vars": "\n      --bg-base: #0b1120;\n      --bg: #0b1120;\n      --surface: rgba(30, 41, 59, 0.9);\n      --surface-hover: rgba(51, 65, 85, 0.96);\n      --bg-surface: #1e293b;\n      --bg-card: rgba(30, 41, 59, 0.88);\n      --bg-card-hover: rgba(51, 65, 85, 0.96);\n      --card: rgba(30, 41, 59, 0.88);\n      --card-hover: rgba(51, 65, 85, 0.96);\n      --border-color: rgba(255, 255, 255, 0.15);\n      --border-accent: #3b82f6;\n      --primary: #3b82f6;\n      --primary-glow: rgba(59, 130, 246, 0.3);\n      --accent: #60a5fa;\n      --accent-purple: #a855f7;\n      --success: #10b981;\n      --warning: #f59e0b;\n      --danger: #ef4444;\n      --text-main: #f8fafc;\n      --text-muted: #e2e8f0;\n      --text-dim: #94a3b8;\n      --radius-sm: 6px;\n      --radius-md: 10px;\n      --radius-lg: 14px;\n      --body-bg: #0b1120;\n        "}};
     
     const State = {
       activeTab: "dashboard",
@@ -1401,10 +1445,10 @@
       if (!THEMES_DATA[themeKey]) return;
       State.activeTheme = themeKey;
       document.documentElement.setAttribute('data-theme', themeKey);
-      const styleEl = document.getElementById('theme-styles');
+      const styleEl = document.getElementById('theme-vars');
       if (styleEl) {
         const themeVars = THEMES_DATA[themeKey].vars;
-        styleEl.innerHTML = `:root { ${themeVars} --font-sans: 'Inter', sans-serif; --font-mono: 'JetBrains Mono', monospace; }`;
+        styleEl.innerHTML = `:root { ${themeVars} --font-sans: 'Inter', sans-serif; --font-mono: 'JetBrains Mono', monospace; --shadow-glow: 0 0 35px -5px var(--primary-glow); }`;
       }
       const footTheme = document.getElementById('foot-theme');
       if (footTheme) footTheme.textContent = themeKey.toUpperCase();
@@ -1757,7 +1801,494 @@ console.log("[OmniAST TS] Runtime ready");`;
       updateSignalInspector();
       applyPreset('carbon');
       renderCustomSvg(document.getElementById('customSvgInput').value);
+      if (window.initSovereign3DBackground) {
+        window.initSovereign3DBackground();
+      }
     });
   </script>
+
+  
+  <!-- 3D Cyber-Universe Background Engine (Three.js & WebGL) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+  (function () {
+    'use strict';
+
+    function initSovereign3DBackground() {
+      const canvas = document.getElementById('bg-canvas-3d');
+      if (!canvas) return;
+
+      // Respetar preferencias de accesibilidad de movimiento reducido
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        init2DFallback(canvas);
+        return;
+      }
+
+      // Verificar Three.js
+      if (typeof THREE === 'undefined') {
+        console.warn('[OmniAST 3D] Three.js no está disponible. Activando fallback 2D.');
+        init2DFallback(canvas);
+        return;
+      }
+
+      let scene, camera, renderer;
+      let mainGroup;
+      let coreMesh, innerCoreMesh, centerCoreMesh;
+      let rings = [];
+      let satellites = [];
+      let starfieldMesh;
+      let particlesMesh, linesMesh;
+      let particlePositions, particleData = [];
+      let tokenSprites = [];
+      const MAX_PARTICLES = 190;
+      const MAX_DISTANCE = 48;
+
+      let mouseX = 0, mouseY = 0;
+      let targetX = 0, targetY = 0;
+      let isPaused = false;
+      let clock = 0;
+
+      try {
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+
+        // 1. Escena y Cámara con perspectiva cinematográfica
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 1600);
+        camera.position.z = 210;
+
+        // 2. Renderer WebGL de alto rendimiento con transparencia
+        renderer = new THREE.WebGLRenderer({
+          canvas: canvas,
+          alpha: true,
+          antialias: true,
+          powerPreference: 'high-performance'
+        });
+        renderer.setSize(width, height);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+        mainGroup = new THREE.Group();
+        scene.add(mainGroup);
+
+        // 3. Campo de Estrellas Cósmicas (Deep Starfield)
+        const starCount = 420;
+        const starGeo = new THREE.BufferGeometry();
+        const starPos = new Float32Array(starCount * 3);
+        for (let s = 0; s < starCount; s++) {
+          const rad = 180 + Math.random() * 450;
+          const th = Math.random() * Math.PI * 2;
+          const ph = Math.acos((Math.random() * 2) - 1);
+          starPos[s * 3] = rad * Math.sin(ph) * Math.cos(th);
+          starPos[s * 3 + 1] = rad * Math.sin(ph) * Math.sin(th);
+          starPos[s * 3 + 2] = rad * Math.cos(ph);
+        }
+        starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+        const starMat = new THREE.PointsMaterial({
+          color: 0xc4b5fd,
+          size: 1.8,
+          transparent: true,
+          opacity: 0.65
+        });
+        starfieldMesh = new THREE.Points(starGeo, starMat);
+        scene.add(starfieldMesh);
+
+        // 4. Núcleos Geométricos Soberanos (Sovereign Multi-Cores)
+        // Núcleo Exterior: Icosaedro Amatista
+        const coreGeo = new THREE.IcosahedronGeometry(48, 1);
+        const coreMat = new THREE.MeshBasicMaterial({
+          color: 0xa855f7,
+          wireframe: true,
+          transparent: true,
+          opacity: 0.38
+        });
+        coreMesh = new THREE.Mesh(coreGeo, coreMat);
+        mainGroup.add(coreMesh);
+
+        // Núcleo Medio: Dodecaedro Índigo Eléctrico
+        const innerGeo = new THREE.DodecahedronGeometry(30, 0);
+        const innerMat = new THREE.MeshBasicMaterial({
+          color: 0x6366f1,
+          wireframe: true,
+          transparent: true,
+          opacity: 0.48
+        });
+        innerCoreMesh = new THREE.Mesh(innerGeo, innerMat);
+        mainGroup.add(innerCoreMesh);
+
+        // Núcleo Central: Octaedro Cian Cuántico
+        const centerGeo = new THREE.OctahedronGeometry(15, 0);
+        const centerMat = new THREE.MeshBasicMaterial({
+          color: 0x22d3ee,
+          wireframe: true,
+          transparent: true,
+          opacity: 0.75
+        });
+        centerCoreMesh = new THREE.Mesh(centerGeo, centerMat);
+        mainGroup.add(centerCoreMesh);
+
+        // 5. Cuádruple Anillo Orbital Giroscópico (Gimbal 4D)
+        const ringConfigs = [
+          { r: 72, tube: 0.45, color: 0x9333ea, rotX: Math.PI / 3, rotY: 0, rotZ: 0 },
+          { r: 92, tube: 0.40, color: 0x06b6d4, rotX: 0, rotY: Math.PI / 4, rotZ: 0 },
+          { r: 112, tube: 0.35, color: 0xec4899, rotX: -Math.PI / 5, rotY: 0, rotZ: Math.PI / 6 },
+          { r: 132, tube: 0.35, color: 0x38bdf8, rotX: 0, rotY: -Math.PI / 3, rotZ: 0 }
+        ];
+        ringConfigs.forEach(rc => {
+          const rGeo = new THREE.TorusGeometry(rc.r, rc.tube, 16, 120);
+          const rMat = new THREE.MeshBasicMaterial({
+            color: rc.color,
+            transparent: true,
+            opacity: 0.42
+          });
+          const rMesh = new THREE.Mesh(rGeo, rMat);
+          rMesh.rotation.set(rc.rotX, rc.rotY, rc.rotZ);
+          mainGroup.add(rMesh);
+          rings.push(rMesh);
+        });
+
+        // 6. Satélites Orbitantes
+        const satColors = [0x22d3ee, 0xa855f7, 0xec4899, 0x10b981, 0xfbbf24, 0x60a5fa];
+        for (let s = 0; s < 6; s++) {
+          const satGeo = new THREE.BoxGeometry(3, 3, 3);
+          const satMat = new THREE.MeshBasicMaterial({
+            color: satColors[s % satColors.length],
+            transparent: true,
+            opacity: 0.85
+          });
+          const satMesh = new THREE.Mesh(satGeo, satMat);
+          mainGroup.add(satMesh);
+          satellites.push({
+            mesh: satMesh,
+            radius: 65 + s * 14,
+            speed: 0.015 + (s * 0.005),
+            angle: (s * Math.PI) / 3
+          });
+        }
+
+        // 7. Red Plexus / Constelación AST
+        const pCount = Math.min(MAX_PARTICLES, Math.max(100, Math.floor(width / 7)));
+        particlePositions = new Float32Array(pCount * 3);
+        const particleColors = new Float32Array(pCount * 3);
+        const pal = [
+          new THREE.Color(0xa855f7),
+          new THREE.Color(0x38bdf8),
+          new THREE.Color(0x10b981),
+          new THREE.Color(0xfbbf24),
+          new THREE.Color(0xec4899)
+        ];
+
+        for (let i = 0; i < pCount; i++) {
+          const radius = 55 + Math.random() * 115;
+          const theta = Math.random() * Math.PI * 2;
+          const phi = Math.acos((Math.random() * 2) - 1);
+          particlePositions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+          particlePositions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+          particlePositions[i * 3 + 2] = radius * Math.cos(phi);
+
+          particleData.push({
+            vx: (Math.random() - 0.5) * 0.2,
+            vy: (Math.random() - 0.5) * 0.2,
+            vz: (Math.random() - 0.5) * 0.2
+          });
+
+          const c = pal[i % pal.length];
+          particleColors[i * 3] = c.r;
+          particleColors[i * 3 + 1] = c.g;
+          particleColors[i * 3 + 2] = c.b;
+        }
+
+        const pGeo = new THREE.BufferGeometry();
+        pGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3).setUsage(THREE.DynamicDrawUsage));
+        pGeo.setAttribute('color', new THREE.BufferAttribute(particleColors, 3));
+        const pMat = new THREE.PointsMaterial({
+          size: 3.6,
+          vertexColors: true,
+          transparent: true,
+          opacity: 0.85
+        });
+        particlesMesh = new THREE.Points(pGeo, pMat);
+        mainGroup.add(particlesMesh);
+
+        // Líneas dinámicas de conexión
+        const maxLines = (pCount * (pCount - 1)) / 2;
+        const linePositions = new Float32Array(maxLines * 6);
+        const lineColors = new Float32Array(maxLines * 6);
+        const lineGeo = new THREE.BufferGeometry();
+        lineGeo.setAttribute('position', new THREE.BufferAttribute(linePositions, 3).setUsage(THREE.DynamicDrawUsage));
+        lineGeo.setAttribute('color', new THREE.BufferAttribute(lineColors, 3).setUsage(THREE.DynamicDrawUsage));
+        const lineMat = new THREE.LineBasicMaterial({
+          vertexColors: true,
+          transparent: true,
+          opacity: 0.45
+        });
+        linesMesh = new THREE.LineSegments(lineGeo, lineMat);
+        mainGroup.add(linesMesh);
+
+        // 8. "LENGUAJE DE NOSOTROS" — 16 Sprites 3D Orbitantes con Badges de Sintaxis AST
+        function createTextBadgeSprite(text, borderColor, textColor) {
+          const c = document.createElement('canvas');
+          c.width = 440;
+          c.height = 92;
+          const ctx = c.getContext('2d');
+
+          // Fondo Glassmorphic Oscuro
+          ctx.fillStyle = 'rgba(7, 11, 24, 0.92)';
+          ctx.strokeStyle = borderColor || '#38bdf8';
+          ctx.lineWidth = 4;
+
+          const r = 24;
+          const x = 6, y = 6, w = c.width - 12, h = c.height - 12;
+          ctx.beginPath();
+          ctx.moveTo(x + r, y);
+          ctx.arcTo(x + w, y, x + w, y + h, r);
+          ctx.arcTo(x + w, y + h, x, y + h, r);
+          ctx.arcTo(x, y + h, x, y, r);
+          ctx.arcTo(x, y, x + w, y, r);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+
+          // Punto de estado brillante
+          ctx.beginPath();
+          ctx.arc(38, c.height / 2, 8, 0, Math.PI * 2);
+          ctx.fillStyle = borderColor || '#38bdf8';
+          ctx.shadowColor = borderColor || '#38bdf8';
+          ctx.shadowBlur = 10;
+          ctx.fill();
+          ctx.shadowBlur = 0;
+
+          // Texto en JetBrains Mono
+          ctx.fillStyle = textColor || '#ffffff';
+          ctx.font = 'bold 25px "JetBrains Mono", monospace';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(text, 62, c.height / 2);
+
+          const tex = new THREE.CanvasTexture(c);
+          tex.minFilter = THREE.LinearFilter;
+          const sMat = new THREE.SpriteMaterial({
+            map: tex,
+            transparent: true,
+            opacity: 0.90
+          });
+          const sp = new THREE.Sprite(sMat);
+          sp.scale.set(36, 7.5, 1);
+          return sp;
+        }
+
+        const ourLanguageTokens = [
+          { text: "◈ OmniAST v0.3.0", border: "#38bdf8", color: "#e0f2fe" },
+          { text: "⚡ GraphLang · AST", border: "#a855f7", color: "#f3e8ff" },
+          { text: "👑 JackStar Sovereign", border: "#fbbf24", color: "#fef3c7" },
+          { text: "📄 page SovereignPortal", border: "#3b82f6", color: "#dbeafe" },
+          { text: "📡 signal kernelStatus", border: "#10b981", color: "#d1fae5" },
+          { text: "📦 model ASTGraphNode", border: "#6366f1", color: "#e0e7ff" },
+          { text: "🔌 endpoint /api/v1/ast", border: "#f59e0b", color: "#fef3c7" },
+          { text: "🛡️ sentinel FleetSupervisor", border: "#ec4899", color: "#fce7f3" },
+          { text: "⚙️ machine QuantumAST", border: "#06b6d4", color: "#cffafe" },
+          { text: "🦀 Axum 0.7 + Tokio 1.0", border: "#f97316", color: "#ffedd5" },
+          { text: "⚡ Micro-Signals <3.8KB", border: "#10b981", color: "#d1fae5" },
+          { text: "📉 Token Savings -85.4%", border: "#22c55e", color: "#dcfce7" },
+          { text: "💎 Zero-Virtual-DOM", border: "#38bdf8", color: "#e0f2fe" },
+          { text: "🌸 Saori AI · Athena SRE", border: "#c084fc", color: "#f3e8ff" },
+          { text: "⭐ Star Cloud 24/7/365", border: "#fbbf24", color: "#fef3c7" },
+          { text: "🛡️ SRE Swarm Sentinel", border: "#ec4899", color: "#fce7f3" }
+        ];
+
+        ourLanguageTokens.forEach((tok, idx) => {
+          const sp = createTextBadgeSprite(tok.text, tok.border, tok.color);
+          mainGroup.add(sp);
+          const rad = 88 + (idx % 4) * 22;
+          const initialAngle = (idx * (Math.PI * 2)) / ourLanguageTokens.length;
+          const yOffset = ((idx % 5) - 2) * 19;
+          tokenSprites.push({
+            sprite: sp,
+            radius: rad,
+            angle: initialAngle,
+            speed: 0.0032 + (idx % 3) * 0.0018,
+            yOffset: yOffset
+          });
+        });
+
+        // 9. Interacción con Mouse / Tacto y Bucle de Animación
+        function onPointerMove(e) {
+          const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+          const clientY = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+          mouseX = (clientX / window.innerWidth) * 2 - 1;
+          mouseY = -(clientY / window.innerHeight) * 2 + 1;
+        }
+
+        window.addEventListener('pointermove', onPointerMove, { passive: true });
+        window.addEventListener('touchmove', onPointerMove, { passive: true });
+
+        window.addEventListener('resize', () => {
+          width = window.innerWidth;
+          height = window.innerHeight;
+          camera.aspect = width / height;
+          camera.updateProjectionMatrix();
+          renderer.setSize(width, height);
+          renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        }, { passive: true });
+
+        document.addEventListener('visibilitychange', () => {
+          isPaused = document.hidden;
+        });
+
+        function animate() {
+          requestAnimationFrame(animate);
+          if (isPaused) return;
+
+          clock += 0.016;
+
+          targetX += (mouseX - targetX) * 0.05;
+          targetY += (mouseY - targetY) * 0.05;
+
+          mainGroup.rotation.y += 0.0028;
+          mainGroup.rotation.x = targetY * 0.22;
+          mainGroup.rotation.y += targetX * 0.004;
+
+          starfieldMesh.rotation.y -= 0.0005;
+
+          coreMesh.rotation.y += 0.005;
+          coreMesh.rotation.x += 0.0025;
+
+          innerCoreMesh.rotation.y -= 0.0065;
+          innerCoreMesh.rotation.z += 0.0035;
+
+          centerCoreMesh.rotation.x += 0.012;
+          centerCoreMesh.rotation.y += 0.014;
+          const pulse = 1.0 + Math.sin(clock * 3) * 0.2;
+          centerCoreMesh.scale.set(pulse, pulse, pulse);
+
+          rings[0].rotation.z += 0.0055;
+          rings[1].rotation.x -= 0.0045;
+          rings[2].rotation.y += 0.0065;
+          rings[3].rotation.z -= 0.004;
+
+          satellites.forEach(sat => {
+            sat.angle += sat.speed;
+            sat.mesh.position.x = Math.cos(sat.angle) * sat.radius;
+            sat.mesh.position.z = Math.sin(sat.angle) * sat.radius;
+            sat.mesh.position.y = Math.sin(sat.angle * 1.5) * (sat.radius * 0.35);
+            sat.mesh.rotation.x += 0.02;
+            sat.mesh.rotation.y += 0.02;
+          });
+
+          // Orbitar Sprites de Sintaxis ("lenguaje de nosotros")
+          tokenSprites.forEach(tok => {
+            tok.angle += tok.speed;
+            tok.sprite.position.x = Math.cos(tok.angle) * tok.radius;
+            tok.sprite.position.z = Math.sin(tok.angle) * tok.radius;
+            tok.sprite.position.y = tok.yOffset + Math.sin(tok.angle * 1.8 + clock) * 9;
+          });
+
+          // Enlaces Plexus Dinámicos
+          let connectedLines = 0;
+          let lineVertexPos = 0;
+          let lineColorsPos = 0;
+
+          for (let i = 0; i < pCount; i++) {
+            const i3 = i * 3;
+            particlePositions[i3] += particleData[i].vx;
+            particlePositions[i3 + 1] += particleData[i].vy;
+            particlePositions[i3 + 2] += particleData[i].vz;
+
+            const dist = Math.sqrt(
+              particlePositions[i3] * particlePositions[i3] +
+              particlePositions[i3 + 1] * particlePositions[i3 + 1] +
+              particlePositions[i3 + 2] * particlePositions[i3 + 2]
+            );
+
+            if (dist > 165 || dist < 42) {
+              particleData[i].vx *= -1;
+              particleData[i].vy *= -1;
+              particleData[i].vz *= -1;
+            }
+
+            for (let j = i + 1; j < pCount; j++) {
+              const j3 = j * 3;
+              const dx = particlePositions[i3] - particlePositions[j3];
+              const dy = particlePositions[i3 + 1] - particlePositions[j3 + 1];
+              const dz = particlePositions[i3 + 2] - particlePositions[j3 + 2];
+              const d = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+              if (d < MAX_DISTANCE) {
+                const alpha = (1.0 - d / MAX_DISTANCE) * 0.55;
+
+                linePositions[lineVertexPos++] = particlePositions[i3];
+                linePositions[lineVertexPos++] = particlePositions[i3 + 1];
+                linePositions[lineVertexPos++] = particlePositions[i3 + 2];
+
+                linePositions[lineVertexPos++] = particlePositions[j3];
+                linePositions[lineVertexPos++] = particlePositions[j3 + 1];
+                linePositions[lineVertexPos++] = particlePositions[j3 + 2];
+
+                const cR = 0.58 * alpha, cG = 0.32 * alpha, cB = 0.95 * alpha;
+                lineColors[lineColorsPos++] = cR;
+                lineColors[lineColorsPos++] = cG;
+                lineColors[lineColorsPos++] = cB;
+
+                const cR2 = 0.12 * alpha, cG2 = 0.75 * alpha, cB2 = 0.95 * alpha;
+                lineColors[lineColorsPos++] = cR2;
+                lineColors[lineColorsPos++] = cG2;
+                lineColors[lineColorsPos++] = cB2;
+
+                connectedLines++;
+              }
+            }
+          }
+
+          pGeo.attributes.position.needsUpdate = true;
+          lineGeo.setDrawRange(0, connectedLines * 2);
+          lineGeo.attributes.position.needsUpdate = true;
+          lineGeo.attributes.color.needsUpdate = true;
+
+          renderer.render(scene, camera);
+        }
+
+        animate();
+      } catch (err) {
+        console.warn('[OmniAST 3D] Error WebGL, ejecutando fallback 2D:', err);
+        init2DFallback(canvas);
+      }
+    }
+
+    // Fallback Canvas 2D
+    function init2DFallback(canvas) {
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      let w = window.innerWidth, h = window.innerHeight;
+      canvas.width = w; canvas.height = h;
+
+      const pts = Array.from({ length: 48 }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.6,
+        vy: (Math.random() - 0.5) * 0.6
+      }));
+
+      function step() {
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = '#070913';
+        ctx.fillRect(0, 0, w, h);
+
+        pts.forEach(p => {
+          p.x += p.vx; p.y += p.vy;
+          if (p.x < 0 || p.x > w) p.vx *= -1;
+          if (p.y < 0 || p.y > h) p.vy *= -1;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(56, 189, 248, 0.7)';
+          ctx.fill();
+        });
+
+        requestAnimationFrame(step);
+      }
+      step();
+    }
+
+    window.initSovereign3DBackground = initSovereign3DBackground;
+  })();
+  </script>
+
 </body>
 </html>

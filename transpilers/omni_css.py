@@ -232,16 +232,31 @@ def get_omni_ui_css() -> str:
   100% { transform: rotate(360deg); }
 }
 
+/* --- Sovereign 3D Cyber-Universe Background Canvas --- */
+#bg-canvas-3d {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.95;
+}
+
 /* --- Hero Section & Banner --- */
 .hero-container {
   position: relative;
-  padding: 60px 32px 48px;
+  padding: 60px 36px 48px;
   margin-bottom: 32px;
   border-radius: var(--radius-lg);
-  background: radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.15), transparent 60%),
-              radial-gradient(circle at 20% 80%, rgba(6, 182, 212, 0.12), transparent 50%),
+  background: radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.22), transparent 60%),
+              radial-gradient(circle at 20% 80%, rgba(6, 182, 212, 0.18), transparent 50%),
               var(--surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--border-color);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -254,7 +269,7 @@ def get_omni_ui_css() -> str:
   right: 0;
   width: 50%;
   height: 100%;
-  opacity: 0.12;
+  opacity: 0.15;
   pointer-events: none;
   z-index: 0;
 }
@@ -271,13 +286,13 @@ def get_omni_ui_css() -> str:
   gap: 8px;
   padding: 6px 14px;
   border-radius: 9999px;
-  background: rgba(139, 92, 246, 0.15);
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  background: rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.4);
   font-size: 0.78rem;
   font-family: var(--font-mono);
   color: #c084fc;
   margin-bottom: 16px;
-  box-shadow: 0 0 12px rgba(139, 92, 246, 0.2);
+  box-shadow: 0 0 16px rgba(139, 92, 246, 0.3);
 }
 
 .hero-badge .pulse-dot {
@@ -295,14 +310,15 @@ def get_omni_ui_css() -> str:
 }
 
 .hero-title {
-  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-size: clamp(2.2rem, 4.5vw, 3.4rem);
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.15;
-  margin-bottom: 14px;
-  background: linear-gradient(135deg, var(--text-main) 30%, var(--primary) 70%, var(--accent) 100%);
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #ffffff 15%, #38bdf8 55%, #c084fc 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 14px rgba(56, 189, 248, 0.35));
 }
 
 .hero-subtitle {
@@ -310,6 +326,7 @@ def get_omni_ui_css() -> str:
   color: var(--text-muted);
   line-height: 1.6;
   margin-bottom: 24px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
 }
 
 .hero-actions {
@@ -334,17 +351,19 @@ def get_omni_ui_css() -> str:
 }
 
 .hero-stat-val {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.6rem;
+  font-weight: 800;
   font-family: var(--font-mono);
-  color: var(--text-main);
+  color: #ffffff;
+  text-shadow: 0 0 16px rgba(56, 189, 248, 0.45);
 }
 
 .hero-stat-lbl {
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   color: var(--text-dim);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
+  font-weight: 600;
 }
 
 /* --- SVG Animation Utilities --- */
