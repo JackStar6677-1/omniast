@@ -140,3 +140,23 @@ def get_theme_css(theme_name: str = "sovereign") -> str:
     key = theme_name.lower().strip()
     theme = THEMES.get(key, THEMES["sovereign"])
     return theme["vars"]
+
+def get_all_themes_css(default_theme: str = "sovereign") -> str:
+    default_key = default_theme.lower().strip()
+    if default_key not in THEMES:
+        default_key = "sovereign"
+
+    css_parts = []
+    # Selector por defecto en :root y selector específico
+    css_parts.append(f":root, [data-theme=\"{default_key}\"] {{")
+    css_parts.append(THEMES[default_key]["vars"])
+    css_parts.append("}\n")
+
+    # Selectores para el resto de temas
+    for key, val in THEMES.items():
+        if key != default_key:
+            css_parts.append(f"[data-theme=\"{key}\"] {{")
+            css_parts.append(val["vars"])
+            css_parts.append("}\n")
+
+    return "\n".join(css_parts)

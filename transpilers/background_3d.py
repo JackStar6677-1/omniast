@@ -22,6 +22,8 @@ def get_3d_background_html() -> str:
     function initSovereign3DBackground() {
       const canvas = document.getElementById('bg-canvas-3d');
       if (!canvas) return;
+      if (window.__sovereign3DInitialized) return;
+      window.__sovereign3DInitialized = true;
 
       // Respetar preferencias de accesibilidad de movimiento reducido
       if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -232,12 +234,12 @@ def get_3d_background_html() -> str:
         // 8. "LENGUAJE DE NOSOTROS" — 16 Sprites 3D Orbitantes con Badges de Sintaxis AST
         function createTextBadgeSprite(text, borderColor, textColor) {
           const c = document.createElement('canvas');
-          c.width = 440;
-          c.height = 92;
+          c.width = 480;
+          c.height = 96;
           const ctx = c.getContext('2d');
 
-          // Fondo Glassmorphic Oscuro
-          ctx.fillStyle = 'rgba(7, 11, 24, 0.92)';
+          // Fondo Glassmorphic Oscuro de Alto Contraste
+          ctx.fillStyle = 'rgba(9, 14, 28, 0.94)';
           ctx.strokeStyle = borderColor || '#38bdf8';
           ctx.lineWidth = 4;
 
@@ -255,28 +257,28 @@ def get_3d_background_html() -> str:
 
           // Punto de estado brillante
           ctx.beginPath();
-          ctx.arc(38, c.height / 2, 8, 0, Math.PI * 2);
+          ctx.arc(36, c.height / 2, 8, 0, Math.PI * 2);
           ctx.fillStyle = borderColor || '#38bdf8';
           ctx.shadowColor = borderColor || '#38bdf8';
-          ctx.shadowBlur = 10;
+          ctx.shadowBlur = 12;
           ctx.fill();
           ctx.shadowBlur = 0;
 
           // Texto en JetBrains Mono
           ctx.fillStyle = textColor || '#ffffff';
-          ctx.font = 'bold 25px "JetBrains Mono", monospace';
+          ctx.font = 'bold 24px "JetBrains Mono", monospace';
           ctx.textBaseline = 'middle';
-          ctx.fillText(text, 62, c.height / 2);
+          ctx.fillText(text, 58, c.height / 2);
 
           const tex = new THREE.CanvasTexture(c);
           tex.minFilter = THREE.LinearFilter;
           const sMat = new THREE.SpriteMaterial({
             map: tex,
             transparent: true,
-            opacity: 0.90
+            opacity: 0.92
           });
           const sp = new THREE.Sprite(sMat);
-          sp.scale.set(36, 7.5, 1);
+          sp.scale.set(42, 8.8, 1);
           return sp;
         }
 
@@ -302,17 +304,63 @@ def get_3d_background_html() -> str:
         ourLanguageTokens.forEach((tok, idx) => {
           const sp = createTextBadgeSprite(tok.text, tok.border, tok.color);
           mainGroup.add(sp);
-          const rad = 88 + (idx % 4) * 22;
+          // Radio orbital expandido para cubrir el ancho de pantalla
+          const rad = 100 + (idx % 6) * 25;
           const initialAngle = (idx * (Math.PI * 2)) / ourLanguageTokens.length;
-          const yOffset = ((idx % 5) - 2) * 19;
+          const yOffset = ((idx % 7) - 3) * 22;
           tokenSprites.push({
             sprite: sp,
             radius: rad,
             angle: initialAngle,
-            speed: 0.0032 + (idx % 3) * 0.0018,
+            speed: 0.0035 + (idx % 3) * 0.0016,
             yOffset: yOffset
           });
         });
+
+        // Conmutador Reactivo de Tema en el Escenario 3D
+        function update3DTheme(themeKey) {
+          if (!scene) return;
+          const t = (themeKey || 'sovereign').toLowerCase().trim();
+          if (t === 'cyberpunk') {
+            if (coreMesh) coreMesh.material.color.setHex(0x00f0ff);
+            if (innerCoreMesh) innerCoreMesh.material.color.setHex(0xff007f);
+            if (centerCoreMesh) centerCoreMesh.material.color.setHex(0x00f0ff);
+            if (rings[0]) rings[0].material.color.setHex(0x00f0ff);
+            if (rings[1]) rings[1].material.color.setHex(0xff007f);
+            if (rings[2]) rings[2].material.color.setHex(0x9d00ff);
+            if (rings[3]) rings[3].material.color.setHex(0x00f0ff);
+            if (starfieldMesh) starfieldMesh.material.color.setHex(0x38bdf8);
+          } else if (t === 'terminal') {
+            if (coreMesh) coreMesh.material.color.setHex(0x22c55e);
+            if (innerCoreMesh) innerCoreMesh.material.color.setHex(0x4ade80);
+            if (centerCoreMesh) centerCoreMesh.material.color.setHex(0x86efac);
+            if (rings[0]) rings[0].material.color.setHex(0x22c55e);
+            if (rings[1]) rings[1].material.color.setHex(0x16a34a);
+            if (rings[2]) rings[2].material.color.setHex(0x4ade80);
+            if (rings[3]) rings[3].material.color.setHex(0x22c55e);
+            if (starfieldMesh) starfieldMesh.material.color.setHex(0x86efac);
+          } else if (t === 'minimal') {
+            if (coreMesh) coreMesh.material.color.setHex(0x3b82f6);
+            if (innerCoreMesh) innerCoreMesh.material.color.setHex(0x60a5fa);
+            if (centerCoreMesh) centerCoreMesh.material.color.setHex(0x93c5fd);
+            if (rings[0]) rings[0].material.color.setHex(0x3b82f6);
+            if (rings[1]) rings[1].material.color.setHex(0x60a5fa);
+            if (rings[2]) rings[2].material.color.setHex(0xa855f7);
+            if (rings[3]) rings[3].material.color.setHex(0x38bdf8);
+            if (starfieldMesh) starfieldMesh.material.color.setHex(0x94a3b8);
+          } else {
+            // Sovereign Glass
+            if (coreMesh) coreMesh.material.color.setHex(0xa855f7);
+            if (innerCoreMesh) innerCoreMesh.material.color.setHex(0x6366f1);
+            if (centerCoreMesh) centerCoreMesh.material.color.setHex(0x22d3ee);
+            if (rings[0]) rings[0].material.color.setHex(0x9333ea);
+            if (rings[1]) rings[1].material.color.setHex(0x06b6d4);
+            if (rings[2]) rings[2].material.color.setHex(0xec4899);
+            if (rings[3]) rings[3].material.color.setHex(0x38bdf8);
+            if (starfieldMesh) starfieldMesh.material.color.setHex(0xc4b5fd);
+          }
+        }
+        window.update3DTheme = update3DTheme;
 
         // 9. Interacción con Mouse / Tacto y Bucle de Animación
         function onPointerMove(e) {
@@ -492,6 +540,18 @@ def get_3d_background_html() -> str:
     }
 
     window.initSovereign3DBackground = initSovereign3DBackground;
+
+    // Inicialización inmediata, garantizada y libre de condiciones de carrera
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      initSovereign3DBackground();
+    } else {
+      document.addEventListener('DOMContentLoaded', initSovereign3DBackground);
+    }
+    window.addEventListener('load', function () {
+      if (!window.__sovereign3DInitialized) {
+        initSovereign3DBackground();
+      }
+    });
   })();
   </script>
 """

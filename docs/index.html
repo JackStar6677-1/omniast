@@ -10,8 +10,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   
   <style id="theme-vars">
-    :root {
-      
+    :root, [data-theme="sovereign"] {
+
       --bg-base: #070913;
       --bg: #070913;
       --surface: rgba(15, 23, 42, 0.85);
@@ -38,6 +38,100 @@
       --radius-lg: 20px;
       --body-bg: #070913;
         
+}
+
+[data-theme="cyberpunk"] {
+
+      --bg-base: #04060c;
+      --bg: #04060c;
+      --surface: rgba(10, 18, 38, 0.9);
+      --surface-hover: rgba(18, 32, 68, 0.96);
+      --bg-surface: #0a0f1d;
+      --bg-card: rgba(10, 18, 38, 0.88);
+      --bg-card-hover: rgba(18, 32, 68, 0.96);
+      --card: rgba(10, 18, 38, 0.88);
+      --card-hover: rgba(18, 32, 68, 0.96);
+      --border-color: rgba(0, 240, 255, 0.25);
+      --border-accent: #00f0ff;
+      --primary: #00f0ff;
+      --primary-glow: rgba(0, 240, 255, 0.45);
+      --accent: #ff007f;
+      --accent-purple: #9d00ff;
+      --success: #00ff66;
+      --warning: #ffe600;
+      --danger: #ff003c;
+      --text-main: #f0fdff;
+      --text-muted: #93c5fd;
+      --text-dim: #60a5fa;
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --radius-lg: 10px;
+      --body-bg: #04060c;
+        
+}
+
+[data-theme="terminal"] {
+
+      --bg-base: #060906;
+      --bg: #060906;
+      --surface: rgba(16, 26, 16, 0.9);
+      --surface-hover: rgba(24, 38, 24, 0.96);
+      --bg-surface: #101610;
+      --bg-card: rgba(16, 26, 16, 0.88);
+      --bg-card-hover: rgba(24, 38, 24, 0.96);
+      --card: rgba(16, 26, 16, 0.88);
+      --card-hover: rgba(24, 38, 24, 0.96);
+      --border-color: rgba(34, 197, 94, 0.3);
+      --border-accent: #22c55e;
+      --primary: #22c55e;
+      --primary-glow: rgba(34, 197, 94, 0.4);
+      --accent: #4ade80;
+      --accent-purple: #86efac;
+      --success: #22c55e;
+      --warning: #facc15;
+      --danger: #f87171;
+      --text-main: #f0fdf4;
+      --text-muted: #86efac;
+      --text-dim: #4ade80;
+      --radius-sm: 0px;
+      --radius-md: 2px;
+      --radius-lg: 4px;
+      --body-bg: #060906;
+        
+}
+
+[data-theme="minimal"] {
+
+      --bg-base: #0b1120;
+      --bg: #0b1120;
+      --surface: rgba(30, 41, 59, 0.9);
+      --surface-hover: rgba(51, 65, 85, 0.96);
+      --bg-surface: #1e293b;
+      --bg-card: rgba(30, 41, 59, 0.88);
+      --bg-card-hover: rgba(51, 65, 85, 0.96);
+      --card: rgba(30, 41, 59, 0.88);
+      --card-hover: rgba(51, 65, 85, 0.96);
+      --border-color: rgba(255, 255, 255, 0.15);
+      --border-accent: #3b82f6;
+      --primary: #3b82f6;
+      --primary-glow: rgba(59, 130, 246, 0.3);
+      --accent: #60a5fa;
+      --accent-purple: #a855f7;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #e2e8f0;
+      --text-dim: #94a3b8;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --body-bg: #0b1120;
+        
+}
+
+
+    :root {
       --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
       --shadow-glow: 0 0 35px -5px var(--primary-glow);
@@ -51,17 +145,23 @@
       padding: 0;
     }
 
+    html {
+      background-color: #070913;
+      color-scheme: dark;
+      min-height: 100%;
+    }
+
     body {
       font-family: var(--font-sans);
-      background-color: var(--bg);
-      background: var(--body-bg, #070913);
+      background-color: transparent !important;
+      background: transparent !important;
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       overflow-x: hidden;
       line-height: 1.5;
-      transition: background-color 0.3s ease, color 0.3s ease;
+      transition: color 0.3s ease;
       position: relative;
     }
 
@@ -71,8 +171,9 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      z-index: 0;
+      z-index: -1;
       pointer-events: none;
+      display: block;
       opacity: 0.95;
     }
 
@@ -159,19 +260,27 @@
     }
 
     .theme-select {
-      background: rgba(15, 23, 42, 0.9);
+      background: var(--bg-surface, #0f172a);
       border: 1px solid var(--border-color);
-      color: var(--text-main);
+      color: var(--text-main, #f8fafc);
       padding: 8px 12px;
       border-radius: var(--radius-sm);
       font-size: 0.8rem;
       font-family: var(--font-mono);
       cursor: pointer;
       outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
 
     .theme-select:focus {
       border-color: var(--primary);
+      box-shadow: 0 0 12px var(--primary-glow);
+    }
+
+    .theme-select option {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 6px;
     }
 
     .nav-tabs {
@@ -1445,13 +1554,18 @@
       if (!THEMES_DATA[themeKey]) return;
       State.activeTheme = themeKey;
       document.documentElement.setAttribute('data-theme', themeKey);
-      const styleEl = document.getElementById('theme-vars');
-      if (styleEl) {
-        const themeVars = THEMES_DATA[themeKey].vars;
-        styleEl.innerHTML = `:root { ${themeVars} --font-sans: 'Inter', sans-serif; --font-mono: 'JetBrains Mono', monospace; --shadow-glow: 0 0 35px -5px var(--primary-glow); }`;
+      try {
+        localStorage.setItem('omniast_theme', themeKey);
+      } catch (e) {}
+      const switcher = document.getElementById('theme-switcher');
+      if (switcher && switcher.value !== themeKey) {
+        switcher.value = themeKey;
       }
       const footTheme = document.getElementById('foot-theme');
       if (footTheme) footTheme.textContent = themeKey.toUpperCase();
+      if (window.update3DTheme) {
+        window.update3DTheme(themeKey);
+      }
       updateSignalInspector();
     }
 
@@ -1797,6 +1911,12 @@ console.log("[OmniAST TS] Runtime ready");`;
 
     // Initialize
     window.addEventListener('DOMContentLoaded', () => {
+      try {
+        const saved = localStorage.getItem('omniast_theme');
+        if (saved && THEMES_DATA[saved]) {
+          switchTheme(saved);
+        }
+      } catch (e) {}
       renderNodesTable();
       updateSignalInspector();
       applyPreset('carbon');
@@ -1817,6 +1937,8 @@ console.log("[OmniAST TS] Runtime ready");`;
     function initSovereign3DBackground() {
       const canvas = document.getElementById('bg-canvas-3d');
       if (!canvas) return;
+      if (window.__sovereign3DInitialized) return;
+      window.__sovereign3DInitialized = true;
 
       // Respetar preferencias de accesibilidad de movimiento reducido
       if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -2027,12 +2149,12 @@ console.log("[OmniAST TS] Runtime ready");`;
         // 8. "LENGUAJE DE NOSOTROS" — 16 Sprites 3D Orbitantes con Badges de Sintaxis AST
         function createTextBadgeSprite(text, borderColor, textColor) {
           const c = document.createElement('canvas');
-          c.width = 440;
-          c.height = 92;
+          c.width = 480;
+          c.height = 96;
           const ctx = c.getContext('2d');
 
-          // Fondo Glassmorphic Oscuro
-          ctx.fillStyle = 'rgba(7, 11, 24, 0.92)';
+          // Fondo Glassmorphic Oscuro de Alto Contraste
+          ctx.fillStyle = 'rgba(9, 14, 28, 0.94)';
           ctx.strokeStyle = borderColor || '#38bdf8';
           ctx.lineWidth = 4;
 
@@ -2050,28 +2172,28 @@ console.log("[OmniAST TS] Runtime ready");`;
 
           // Punto de estado brillante
           ctx.beginPath();
-          ctx.arc(38, c.height / 2, 8, 0, Math.PI * 2);
+          ctx.arc(36, c.height / 2, 8, 0, Math.PI * 2);
           ctx.fillStyle = borderColor || '#38bdf8';
           ctx.shadowColor = borderColor || '#38bdf8';
-          ctx.shadowBlur = 10;
+          ctx.shadowBlur = 12;
           ctx.fill();
           ctx.shadowBlur = 0;
 
           // Texto en JetBrains Mono
           ctx.fillStyle = textColor || '#ffffff';
-          ctx.font = 'bold 25px "JetBrains Mono", monospace';
+          ctx.font = 'bold 24px "JetBrains Mono", monospace';
           ctx.textBaseline = 'middle';
-          ctx.fillText(text, 62, c.height / 2);
+          ctx.fillText(text, 58, c.height / 2);
 
           const tex = new THREE.CanvasTexture(c);
           tex.minFilter = THREE.LinearFilter;
           const sMat = new THREE.SpriteMaterial({
             map: tex,
             transparent: true,
-            opacity: 0.90
+            opacity: 0.92
           });
           const sp = new THREE.Sprite(sMat);
-          sp.scale.set(36, 7.5, 1);
+          sp.scale.set(42, 8.8, 1);
           return sp;
         }
 
@@ -2097,17 +2219,63 @@ console.log("[OmniAST TS] Runtime ready");`;
         ourLanguageTokens.forEach((tok, idx) => {
           const sp = createTextBadgeSprite(tok.text, tok.border, tok.color);
           mainGroup.add(sp);
-          const rad = 88 + (idx % 4) * 22;
+          // Radio orbital expandido para cubrir el ancho de pantalla
+          const rad = 100 + (idx % 6) * 25;
           const initialAngle = (idx * (Math.PI * 2)) / ourLanguageTokens.length;
-          const yOffset = ((idx % 5) - 2) * 19;
+          const yOffset = ((idx % 7) - 3) * 22;
           tokenSprites.push({
             sprite: sp,
             radius: rad,
             angle: initialAngle,
-            speed: 0.0032 + (idx % 3) * 0.0018,
+            speed: 0.0035 + (idx % 3) * 0.0016,
             yOffset: yOffset
           });
         });
+
+        // Conmutador Reactivo de Tema en el Escenario 3D
+        function update3DTheme(themeKey) {
+          if (!scene) return;
+          const t = (themeKey || 'sovereign').toLowerCase().trim();
+          if (t === 'cyberpunk') {
+            if (coreMesh) coreMesh.material.color.setHex(0x00f0ff);
+            if (innerCoreMesh) innerCoreMesh.material.color.setHex(0xff007f);
+            if (centerCoreMesh) centerCoreMesh.material.color.setHex(0x00f0ff);
+            if (rings[0]) rings[0].material.color.setHex(0x00f0ff);
+            if (rings[1]) rings[1].material.color.setHex(0xff007f);
+            if (rings[2]) rings[2].material.color.setHex(0x9d00ff);
+            if (rings[3]) rings[3].material.color.setHex(0x00f0ff);
+            if (starfieldMesh) starfieldMesh.material.color.setHex(0x38bdf8);
+          } else if (t === 'terminal') {
+            if (coreMesh) coreMesh.material.color.setHex(0x22c55e);
+            if (innerCoreMesh) innerCoreMesh.material.color.setHex(0x4ade80);
+            if (centerCoreMesh) centerCoreMesh.material.color.setHex(0x86efac);
+            if (rings[0]) rings[0].material.color.setHex(0x22c55e);
+            if (rings[1]) rings[1].material.color.setHex(0x16a34a);
+            if (rings[2]) rings[2].material.color.setHex(0x4ade80);
+            if (rings[3]) rings[3].material.color.setHex(0x22c55e);
+            if (starfieldMesh) starfieldMesh.material.color.setHex(0x86efac);
+          } else if (t === 'minimal') {
+            if (coreMesh) coreMesh.material.color.setHex(0x3b82f6);
+            if (innerCoreMesh) innerCoreMesh.material.color.setHex(0x60a5fa);
+            if (centerCoreMesh) centerCoreMesh.material.color.setHex(0x93c5fd);
+            if (rings[0]) rings[0].material.color.setHex(0x3b82f6);
+            if (rings[1]) rings[1].material.color.setHex(0x60a5fa);
+            if (rings[2]) rings[2].material.color.setHex(0xa855f7);
+            if (rings[3]) rings[3].material.color.setHex(0x38bdf8);
+            if (starfieldMesh) starfieldMesh.material.color.setHex(0x94a3b8);
+          } else {
+            // Sovereign Glass
+            if (coreMesh) coreMesh.material.color.setHex(0xa855f7);
+            if (innerCoreMesh) innerCoreMesh.material.color.setHex(0x6366f1);
+            if (centerCoreMesh) centerCoreMesh.material.color.setHex(0x22d3ee);
+            if (rings[0]) rings[0].material.color.setHex(0x9333ea);
+            if (rings[1]) rings[1].material.color.setHex(0x06b6d4);
+            if (rings[2]) rings[2].material.color.setHex(0xec4899);
+            if (rings[3]) rings[3].material.color.setHex(0x38bdf8);
+            if (starfieldMesh) starfieldMesh.material.color.setHex(0xc4b5fd);
+          }
+        }
+        window.update3DTheme = update3DTheme;
 
         // 9. Interacción con Mouse / Tacto y Bucle de Animación
         function onPointerMove(e) {
@@ -2287,6 +2455,18 @@ console.log("[OmniAST TS] Runtime ready");`;
     }
 
     window.initSovereign3DBackground = initSovereign3DBackground;
+
+    // Inicialización inmediata, garantizada y libre de condiciones de carrera
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      initSovereign3DBackground();
+    } else {
+      document.addEventListener('DOMContentLoaded', initSovereign3DBackground);
+    }
+    window.addEventListener('load', function () {
+      if (!window.__sovereign3DInitialized) {
+        initSovereign3DBackground();
+      }
+    });
   })();
   </script>
 

@@ -18,7 +18,7 @@ Features:
 import json
 from typing import Dict, Any, List
 from core.kernel.engine import OmniASTModule, ASTNode
-from transpilers.themes import THEMES, get_theme_css
+from transpilers.themes import THEMES, get_theme_css, get_all_themes_css
 from transpilers.omni_css import get_omni_ui_css
 from transpilers.background_3d import get_3d_background_html
 
@@ -47,6 +47,7 @@ class WebTranspiler:
                     selected_theme = t
 
         theme_vars = get_theme_css(selected_theme)
+        all_themes_css = get_all_themes_css(selected_theme)
         omni_ui_css = get_omni_ui_css()
         background_3d_html = get_3d_background_html()
 
@@ -93,8 +94,9 @@ class WebTranspiler:
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   
   <style id="theme-vars">
+    {all_themes_css}
+
     :root {{
-      {theme_vars}
       --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
       --shadow-glow: 0 0 35px -5px var(--primary-glow);
@@ -108,17 +110,23 @@ class WebTranspiler:
       padding: 0;
     }}
 
+    html {{
+      background-color: #070913;
+      color-scheme: dark;
+      min-height: 100%;
+    }}
+
     body {{
       font-family: var(--font-sans);
-      background-color: var(--bg);
-      background: var(--body-bg, #070913);
+      background-color: transparent !important;
+      background: transparent !important;
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       overflow-x: hidden;
       line-height: 1.5;
-      transition: background-color 0.3s ease, color 0.3s ease;
+      transition: color 0.3s ease;
       position: relative;
     }}
 
@@ -128,8 +136,9 @@ class WebTranspiler:
       left: 0;
       width: 100vw;
       height: 100vh;
-      z-index: 0;
+      z-index: -1;
       pointer-events: none;
+      display: block;
       opacity: 0.95;
     }}
 
@@ -216,19 +225,27 @@ class WebTranspiler:
     }}
 
     .theme-select {{
-      background: rgba(15, 23, 42, 0.9);
+      background: var(--bg-surface, #0f172a);
       border: 1px solid var(--border-color);
-      color: var(--text-main);
+      color: var(--text-main, #f8fafc);
       padding: 8px 12px;
       border-radius: var(--radius-sm);
       font-size: 0.8rem;
       font-family: var(--font-mono);
       cursor: pointer;
       outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }}
 
     .theme-select:focus {{
       border-color: var(--primary);
+      box-shadow: 0 0 12px var(--primary-glow);
+    }}
+
+    .theme-select option {{
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 6px;
     }}
 
     .nav-tabs {{
@@ -1012,13 +1029,18 @@ class WebTranspiler:
       if (!THEMES_DATA[themeKey]) return;
       State.activeTheme = themeKey;
       document.documentElement.setAttribute('data-theme', themeKey);
-      const styleEl = document.getElementById('theme-vars');
-      if (styleEl) {{
-        const themeVars = THEMES_DATA[themeKey].vars;
-        styleEl.innerHTML = `:root {{ ${{themeVars}} --font-sans: 'Inter', sans-serif; --font-mono: 'JetBrains Mono', monospace; --shadow-glow: 0 0 35px -5px var(--primary-glow); }}`;
+      try {{
+        localStorage.setItem('omniast_theme', themeKey);
+      }} catch (e) {{}}
+      const switcher = document.getElementById('theme-switcher');
+      if (switcher && switcher.value !== themeKey) {{
+        switcher.value = themeKey;
       }}
       const footTheme = document.getElementById('foot-theme');
       if (footTheme) footTheme.textContent = themeKey.toUpperCase();
+      if (window.update3DTheme) {{
+        window.update3DTheme(themeKey);
+      }}
       updateSignalInspector();
     }}
 
@@ -1345,6 +1367,12 @@ class WebTranspiler:
 
     // Initialize
     window.addEventListener('DOMContentLoaded', () => {{
+      try {{
+        const saved = localStorage.getItem('omniast_theme');
+        if (saved && THEMES_DATA[saved]) {{
+          switchTheme(saved);
+        }}
+      }} catch (e) {{}}
       renderNodesTable();
       updateSignalInspector();
       applyPreset('carbon');
