@@ -6,6 +6,23 @@ OmniAST is an open-source, intermediate graph language and execution kernel desi
 
 ---
 
+## 🏛️ Code of Conduct & Mutual Respect
+
+All contributors, reviewers, and maintainers are required to follow our [Code of Conduct](CODE_OF_CONDUCT.md).
+We expect all discussions in issues and pull requests to remain professional, constructive, and technically grounded.
+**Insults, demanding entitlement, toxic behavior, or harassment will result in immediate thread locking and account blocking.**
+
+---
+
+## 📋 Issue-First Workflow (Mandatory)
+
+Before opening a Pull Request:
+1. **Search existing issues** to avoid duplicate proposals.
+2. **Open an Issue first** describing the bug with a minimal `.omni` reproduction snippet, or detailing the architectural proposal before writing code.
+3. **Wait for maintainer approval** before undertaking large refactors or adding dependencies. Unsolicited massive PRs will be closed without review.
+
+---
+
 ## ⚠️ Important Disclaimer: Experimental State
 
 > [!WARNING]
